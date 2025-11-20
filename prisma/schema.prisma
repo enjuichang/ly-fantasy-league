@@ -1,0 +1,232 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Account {
+  id                 String  @id @default(cuid())
+  userId             String
+  type               String
+  provider           String
+  providerAccountId  String
+  refresh_token      String?
+  access_token       String?
+  expires_at         Int?
+  token_type         String?
+  scope              String?
+  id_token           String?
+  session_state      String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  accounts      Account[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  leagues       League[]  @relation("LeagueCommissioner")
+  teams         Team[]
+  leagueMembers LeagueMember[]
+}
+
+model League {
+  id             String         @id @default(cuid())
+  name           String
+  commissionerId String
+  commissioner   User           @relation("LeagueCommissioner", fields: [commissionerId], references: [id])
+
+  seasonStart    DateTime
+  seasonEnd      DateTime?
+  totalWeeks     Int            @default(12) // Total weeks in the season
+
+  teams          Team[]
+  members        LeagueMember[]
+  invitations    Invitation[]
+  matchups       Matchup[]
+
+  draftStatus    String         @default("NOT_STARTED") // NOT_STARTED, IN_PROGRESS, COMPLETED
+  draftPicks     DraftPick[]
+  activities     LeagueActivity[]
+
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model DraftPick {
+  id           String     @id @default(cuid())
+  leagueId     String
+  league       League     @relation(fields: [leagueId], references: [id])
+  teamId       String
+  team         Team       @relation(fields: [teamId], references: [id])
+  legislatorId String
+  legislator   Legislator @relation(fields: [legislatorId], references: [id])
+  pickNumber   Int
+  round        Int
+  
+  createdAt    DateTime   @default(now())
+
+  @@unique([leagueId, pickNumber])
+  @@unique([leagueId, legislatorId])
+}
+
+model DraftPreference {
+  id           String     @id @default(cuid())
+  teamId       String
+  team         Team       @relation(fields: [teamId], references: [id])
+  legislatorId String
+  legislator   Legislator @relation(fields: [legislatorId], references: [id])
+  rank         Int        // 1 = highest priority
+  
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  @@unique([teamId, legislatorId])
+  @@unique([teamId, rank])
+}
+
+model Invitation {
+  id        String   @id @default(cuid())
+  email     String
+  leagueId  String
+  league    League   @relation(fields: [leagueId], references: [id], onDelete: Cascade)
+  status    String   @default("PENDING") // PENDING, ACCEPTED, DECLINED
+  token     String   @unique @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([email, leagueId])
+}
+
+model LeagueMember {
+  id        String   @id @default(cuid())
+  userId    String
+  leagueId  String
+  user      User     @relation(fields: [userId], references: [id])
+  league    League   @relation(fields: [leagueId], references: [id])
+  
+  @@unique([userId, leagueId])
+}
+
+model Team {
+  id        String   @id @default(cuid())
+  name      String
+  ownerId   String
+  leagueId  String
+  owner     User     @relation(fields: [ownerId], references: [id])
+  league    League   @relation(fields: [leagueId], references: [id])
+
+  // Head-to-head record
+  wins      Int      @default(0)
+  losses    Int      @default(0)
+  ties      Int      @default(0)
+
+  legislators       Legislator[]
+  benchLegislatorIds String   @default("") // Comma-separated IDs of bench players
+  draftPicks        DraftPick[]
+  preferences       DraftPreference[]
+  homeMatchups      Matchup[]         @relation("Team1Matchups")
+  awayMatchups      Matchup[]         @relation("Team2Matchups")
+  activities        LeagueActivity[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Legislator {
+  id          String   @id @default(cuid())
+  externalId  String?  @unique // ID from Taiwan Legislative Yuan API
+  nameCh      String   // Chinese name (name from API)
+  nameEn      String?  // English name (ename from API)
+  party       String
+  region      String?
+  sex         String?  // 男 or 女
+  picUrl      String?  // Picture URL from API
+  leaveFlag   String?  // 是 = on leave, 否 = active
+  leaveDate   String?  // Date when legislator went on leave
+  areaName    String?  // Electoral district/area name
+  leaveReason String?  // Reason for leave
+  committee   String?  // Committee assignment
+  onboardDate String?  // Date when legislator started
+
+  teams       Team[]
+  scores      Score[]
+  draftPicks  DraftPick[]
+  preferences DraftPreference[]
+  activitiesAdded   LeagueActivity[] @relation("LegislatorAdded")
+  activitiesDropped LeagueActivity[] @relation("LegislatorDropped")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Score {
+  id           String     @id @default(cuid())
+  legislatorId String
+  legislator   Legislator @relation(fields: [legislatorId], references: [id])
+
+  date         DateTime
+  points       Float
+  reason       String     // e.g. "Voted on Bill X", "Sponsored Bill Y"
+  category     String     // e.g. "VOTE", "BILL_SPONSOR", "BILL_PASS", "NEWS"
+
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+}
+
+model Matchup {
+  id         String    @id @default(cuid())
+  leagueId   String
+  league     League    @relation(fields: [leagueId], references: [id], onDelete: Cascade)
+
+  week       Int       // Week number (1, 2, 3, etc.)
+  weekStart  DateTime  // Monday of that week
+
+  team1Id    String
+  team1      Team      @relation("Team1Matchups", fields: [team1Id], references: [id])
+  team2Id    String?   // Nullable for bye weeks
+  team2      Team?     @relation("Team2Matchups", fields: [team2Id], references: [id])
+
+  // Scores calculated after week ends
+  team1Score Float?
+  team2Score Float?
+  winnerId   String?   // ID of winning team, null if tie or not yet determined
+
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  @@unique([leagueId, week, team1Id])
+  @@index([leagueId, week])
+}
+
+model LeagueActivity {
+  id                    String   @id @default(cuid())
+  leagueId              String
+  league                League   @relation(fields: [leagueId], references: [id], onDelete: Cascade)
+  teamId                String
+  team                  Team     @relation(fields: [teamId], references: [id])
+  type                  String   // PICKUP, DROP, SWAP
+  legislatorAddedId     String?
+  legislatorAdded       Legislator? @relation("LegislatorAdded", fields: [legislatorAddedId], references: [id])
+  legislatorDroppedId   String?
+  legislatorDropped     Legislator? @relation("LegislatorDropped", fields: [legislatorDroppedId], references: [id])
+  message               String   // Auto-generated description
+  
+  createdAt             DateTime @default(now())
+  
+  @@index([leagueId, createdAt])
+}
