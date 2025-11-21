@@ -39,32 +39,8 @@ export default async function Dashboard() {
                 </div>
             </div>
 
-            {invitations.length > 0 && (
-                <div className="mb-8">
-                    <h2 className="mb-4 text-2xl font-bold">{t('dashboard.invitations.title')}</h2>
-                    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                        {invitations.map((invite: any) => (
-                            <Card key={invite.id} className="border-2 border-amber-500/50 bg-amber-500/10">
-                                <CardHeader>
-                                    <CardTitle>{invite.league.name}</CardTitle>
-                                    <CardDescription>{t('dashboard.invitations.invitedBy', { name: invite.league.commissioner.name || invite.league.commissioner.email })}</CardDescription>
-                                </CardHeader>
-                                <CardContent>
-                                    <form action={async () => {
-                                        'use server'
-                                        const { acceptInvitation } = await import("@/app/actions")
-                                        await acceptInvitation(invite.id)
-                                    }}>
-                                        <Button className="w-full">{t('dashboard.invitations.accept')}</Button>
-                                    </form>
-                                </CardContent>
-                            </Card>
-                        ))}
-                    </div>
-                </div>
-            )}
-
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {/* Top Section: Create and Join League */}
+            <div className="grid gap-6 md:grid-cols-2 mb-8">
                 {/* Create League Card */}
                 <Card className="border-dashed border-2 border-primary/30 bg-primary/5 hover:bg-primary/10 transition-colors">
                     <CardHeader>
@@ -102,24 +78,55 @@ export default async function Dashboard() {
                         </form>
                     </CardContent>
                 </Card>
+            </div>
 
-                {/* Existing Leagues */}
-                {leagues.map((league: any) => (
-                    <Link key={league.id} href={`/leagues/${league.id}`}>
-                        <Card className="h-full transition-shadow hover:shadow-md">
-                            <CardHeader>
-                                <CardTitle>{league.name}</CardTitle>
-                                <CardDescription>{t('dashboard.league.seasonStarts', { date: league.seasonStart.toLocaleDateString() })}</CardDescription>
-                            </CardHeader>
-                            <CardContent>
-                                <p>{t('dashboard.league.teamsCount', { count: league._count.teams })}</p>
-                            </CardContent>
-                            <CardFooter>
-                                <Button variant="secondary" className="w-full">{t('dashboard.league.view')}</Button>
-                            </CardFooter>
-                        </Card>
-                    </Link>
-                ))}
+            {/* Middle Section: Pending Invitations */}
+            {invitations.length > 0 && (
+                <div className="mb-8">
+                    <h2 className="mb-4 text-2xl font-bold">{t('dashboard.invitations.title')}</h2>
+                    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                        {invitations.map((invite: any) => (
+                            <Card key={invite.id} className="border-2 border-amber-500/50 bg-amber-500/10">
+                                <CardHeader>
+                                    <CardTitle>{invite.league.name}</CardTitle>
+                                    <CardDescription>{t('dashboard.invitations.invitedBy', { name: invite.league.commissioner.name || invite.league.commissioner.email })}</CardDescription>
+                                </CardHeader>
+                                <CardContent>
+                                    <form action={async () => {
+                                        'use server'
+                                        const { acceptInvitation } = await import("@/app/actions")
+                                        await acceptInvitation(invite.id)
+                                    }}>
+                                        <Button className="w-full">{t('dashboard.invitations.accept')}</Button>
+                                    </form>
+                                </CardContent>
+                            </Card>
+                        ))}
+                    </div>
+                </div>
+            )}
+
+            {/* Bottom Section: Active Leagues */}
+            <div>
+                <h2 className="mb-4 text-2xl font-bold">{t('dashboard.yourLeagues')}</h2>
+                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                    {leagues.map((league: any) => (
+                        <Link key={league.id} href={`/leagues/${league.id}`}>
+                            <Card className="h-full transition-shadow hover:shadow-md">
+                                <CardHeader>
+                                    <CardTitle>{league.name}</CardTitle>
+                                    <CardDescription>{t('dashboard.league.seasonStarts', { date: league.seasonStart.toLocaleDateString() })}</CardDescription>
+                                </CardHeader>
+                                <CardContent>
+                                    <p>{t('dashboard.league.teamsCount', { count: league._count.teams })}</p>
+                                </CardContent>
+                                <CardFooter>
+                                    <Button variant="secondary" className="w-full">{t('dashboard.league.view')}</Button>
+                                </CardFooter>
+                            </Card>
+                        </Link>
+                    ))}
+                </div>
             </div>
         </div>
     )

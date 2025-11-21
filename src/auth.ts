@@ -3,11 +3,13 @@ import Credentials from "next-auth/providers/credentials"
 import Google from "next-auth/providers/google"
 import { PrismaAdapter } from "@auth/prisma-adapter"
 import { prisma } from "@/lib/prisma"
+import { compare } from "bcryptjs"
 import { authConfig } from "./auth.config"
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
     ...authConfig,
     adapter: PrismaAdapter(prisma),
+    trustHost: true,
     providers: [
         Google({
             clientId: process.env.AUTH_GOOGLE_ID,
@@ -29,13 +31,14 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 })
 
                 if (!user) {
-                    // Auto-register for demo purposes
-                    return prisma.user.create({
-                        data: {
-                            email: credentials.email as string,
-                            name: (credentials.email as string).split("@")[0],
-                        }
-                    })
+                    return null
+                }
+
+                if (user.password) {
+                    const isValid = await compare(credentials.password as string, user.password)
+                    if (!isValid) return null
+                } else {
+                    return null
                 }
 
                 return user

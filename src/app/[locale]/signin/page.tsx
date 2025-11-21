@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { useTranslations } from 'next-intl'
 import Image from "next/image"
+import Link from "next/link"
 
 export default function SignInPage() {
     const t = useTranslations('signInPage')
@@ -132,8 +133,14 @@ export default function SignInPage() {
                             {isLoading ? t('signingIn') : t('submitButton')}
                         </Button>
                     </form>
+                    <div className="text-center text-sm mt-4">
+                        {t('noAccount')}{" "}
+                        <Link href="/signup" className="underline">
+                            {t('signUpLink')}
+                        </Link>
+                    </div>
                 </CardContent>
             </Card>
-        </div>
+        </div >
     )
 }

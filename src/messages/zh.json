@@ -52,7 +52,8 @@
       "seasonStarts": "賽季開始：{date}",
       "teamsCount": "{count} 支隊伍",
       "view": "查看聯盟"
-    }
+    },
+    "yourLeagues": "您的聯盟"
   },
   "leaguePage": {
     "standings": {
@@ -453,6 +454,20 @@
     "partyLabel": "政黨",
     "regionLabel": "選區"
   },
+  "signUpPage": {
+    "title": "建立帳號",
+    "subtitle": "輸入您的詳細資訊以開始使用",
+    "nameLabel": "姓名",
+    "namePlaceholder": "您的姓名",
+    "emailLabel": "電子郵件",
+    "emailPlaceholder": "your@email.com",
+    "passwordLabel": "密碼",
+    "passwordPlaceholder": "建立密碼",
+    "submitButton": "註冊",
+    "creating": "建立帳號中...",
+    "alreadyHaveAccount": "已經有帳號了嗎？",
+    "signInLink": "登入"
+  },
   "signInPage": {
     "title": "登入",
     "subtitle": "登入您的夢幻立法院帳號",
@@ -463,7 +478,9 @@
     "passwordLabel": "密碼",
     "passwordPlaceholder": "輸入您的密碼",
     "submitButton": "登入",
-    "signingIn": "登入中..."
+    "signingIn": "登入中...",
+    "noAccount": "還沒有帳號嗎？",
+    "signUpLink": "註冊"
   },
   "invitePage": {
     "title": "聯盟邀請",

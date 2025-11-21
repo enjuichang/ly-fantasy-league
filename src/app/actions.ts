@@ -5,6 +5,7 @@ import { PrismaClient } from "@prisma/client"
 import { redirect } from "next/navigation"
 import { revalidatePath } from "next/cache"
 import { sendInvitationEmail } from "@/lib/email"
+import { hash } from "bcryptjs"
 
 const prisma = new PrismaClient()
 
@@ -96,6 +97,36 @@ export async function joinLeague(formData: FormData) {
 
     revalidatePath("/dashboard")
     redirect(`/leagues/${leagueId}`)
+}
+
+export async function registerUser(formData: FormData) {
+    const name = formData.get("name") as string
+    const email = formData.get("email") as string
+    const password = formData.get("password") as string
+
+    if (!name || !email || !password) {
+        return { success: false, message: "Missing fields" }
+    }
+
+    const existingUser = await prisma.user.findUnique({
+        where: { email }
+    })
+
+    if (existingUser) {
+        return { success: false, message: "User already exists" }
+    }
+
+    const hashedPassword = await hash(password, 10)
+
+    await prisma.user.create({
+        data: {
+            name,
+            email,
+            password: hashedPassword
+        }
+    })
+
+    return { success: true }
 }
 
 export async function createTeam(leagueId: string, formData: FormData) {

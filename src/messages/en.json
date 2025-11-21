@@ -52,7 +52,8 @@
       "seasonStarts": "Season starts: {date}",
       "teamsCount": "{count} Teams",
       "view": "View League"
-    }
+    },
+    "yourLeagues": "Your Leagues"
   },
   "leaguePage": {
     "standings": {
@@ -453,6 +454,20 @@
     "partyLabel": "Party",
     "regionLabel": "Region"
   },
+  "signUpPage": {
+    "title": "Create an Account",
+    "subtitle": "Enter your details to get started",
+    "nameLabel": "Name",
+    "namePlaceholder": "Your Name",
+    "emailLabel": "Email",
+    "emailPlaceholder": "your@email.com",
+    "passwordLabel": "Password",
+    "passwordPlaceholder": "Create a password",
+    "submitButton": "Sign Up",
+    "creating": "Creating account...",
+    "alreadyHaveAccount": "Already have an account?",
+    "signInLink": "Sign In"
+  },
   "signInPage": {
     "title": "Sign In",
     "subtitle": "Sign in to your Fantasy Legislative Yuan account",
@@ -463,7 +478,9 @@
     "passwordLabel": "Password",
     "passwordPlaceholder": "Enter your password",
     "submitButton": "Sign In",
-    "signingIn": "Signing in..."
+    "signingIn": "Signing in...",
+    "noAccount": "Don't have an account?",
+    "signUpLink": "Sign Up"
   },
   "invitePage": {
     "title": "League Invitation",
