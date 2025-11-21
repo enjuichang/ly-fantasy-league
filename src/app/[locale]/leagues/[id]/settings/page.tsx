@@ -1,6 +1,6 @@
 import { auth } from "@/auth"
 import { prisma } from "@/lib/prisma"
-import { getLeague, inviteUser, getLeagueInvitations, regenerateSchedule } from "@/app/actions"
+import { getLeague, getLeagueInvitations, regenerateSchedule } from "@/app/actions"
 import { redirect } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -9,6 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
 import { getTranslations } from 'next-intl/server'
+import { InviteForm } from './invite-form'
 
 export default async function LeagueSettingsPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params
@@ -106,21 +107,7 @@ export default async function LeagueSettingsPage({ params }: { params: Promise<{
                     <CardDescription>{t('settings.invite.description')}</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <form action={async (formData) => {
-                        'use server'
-                        const email = formData.get("email") as string
-                        const result = await inviteUser(id, email)
-                        if (!result.success) {
-                            // In a real app, we'd use useFormState to show this error
-                            console.error(result.message)
-                        }
-                    }} className="space-y-4">
-                        <div className="grid w-full items-center gap-1.5">
-                            <Label htmlFor="email">{t('settings.invite.labelEmail')}</Label>
-                            <Input type="email" id="email" name="email" placeholder={t('settings.invite.placeholderEmail')} required className="max-w-md" />
-                        </div>
-                        <Button type="submit">{t('settings.invite.submit')}</Button>
-                    </form>
+                    <InviteForm leagueId={id} />
                 </CardContent>
             </Card>
 

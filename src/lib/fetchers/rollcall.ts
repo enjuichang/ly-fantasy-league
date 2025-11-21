@@ -298,7 +298,8 @@ async function processVote(
         if (match) {
             legislators.set(vote.legislatorName, match)
         } else {
-            errors.push(`Could not match legislator: ${vote.legislatorName}`)
+            const unicodeName = vote.legislatorName.split('').map(c => '\\u' + c.charCodeAt(0).toString(16).padStart(4, '0')).join('')
+            errors.push(`Could not match legislator: ${vote.legislatorName} (Unicode: ${unicodeName})`)
         }
     }
 

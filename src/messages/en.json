@@ -464,5 +464,17 @@
     "passwordPlaceholder": "Enter your password",
     "submitButton": "Sign In",
     "signingIn": "Signing in..."
+  },
+  "invitePage": {
+    "title": "League Invitation",
+    "invitedBy": "You've been invited by {commissioner}",
+    "members": "Members",
+    "commissioner": "Commissioner",
+    "description": "Join this league and draft your team of Taiwanese legislators. Compete based on real legislative data including bill proposals, speeches, and voting records!",
+    "accept": "Accept Invitation",
+    "decline": "Decline",
+    "accepting": "Accepting...",
+    "declining": "Declining...",
+    "confirmDecline": "Are you sure you want to decline this invitation?"
   }
 }

@@ -4,6 +4,7 @@ import { auth } from "@/auth"
 import { PrismaClient } from "@prisma/client"
 import { redirect } from "next/navigation"
 import { revalidatePath } from "next/cache"
+import { sendInvitationEmail } from "@/lib/email"
 
 const prisma = new PrismaClient()
 
@@ -244,12 +245,15 @@ export async function draftPlayer(leagueId: string, teamId: string, legislatorId
     revalidatePath(`/leagues/${leagueId}/players`)
 }
 
-export async function inviteUser(leagueId: string, email: string) {
+export async function inviteUser(leagueId: string, email: string, locale: string = 'en') {
     const session = await auth()
     if (!session?.user?.id) throw new Error("Not authenticated")
 
     // Verify user exists in DB
-    const currentUser = await prisma.user.findUnique({ where: { id: session.user.id } })
+    const currentUser = await prisma.user.findUnique({
+        where: { id: session.user.id },
+        select: { id: true, name: true, email: true }
+    })
     if (!currentUser) throw new Error("User record not found. Please sign out and sign in again.")
 
     // Verify commissioner
@@ -273,7 +277,9 @@ export async function inviteUser(leagueId: string, email: string) {
                 }
             }
         })
-        if (existingMember) throw new Error("User is already a member")
+        if (existingMember) {
+            return { success: false, message: "User is already a member" }
+        }
     }
 
     // Check if invitation exists
@@ -299,10 +305,23 @@ export async function inviteUser(leagueId: string, email: string) {
         }
     })
 
-    console.log(`[MOCK EMAIL] Sending invite to ${email} for league ${league.name}. Token: ${invitation.token}`)
+    // Send email invitation
+    const emailResult = await sendInvitationEmail({
+        to: email,
+        leagueName: league.name,
+        commissionerName: currentUser.name || currentUser.email || 'Commissioner',
+        token: invitation.token,
+        locale
+    })
+
+    if (!emailResult.success) {
+        console.error(`[EMAIL] Failed to send invitation to ${email}:`, emailResult.error)
+        // Note: We don't fail the invitation creation if email fails
+        // The invitation is still created and can be accepted from dashboard
+    }
 
     revalidatePath(`/leagues/${leagueId}/settings`)
-    return { success: true, message: "Invitation sent" }
+    return { success: true, message: emailResult.success ? "Invitation sent successfully" : "Invitation created (email delivery failed)" }
 }
 
 export async function getLeagueInvitations(leagueId: string) {
@@ -441,6 +460,94 @@ export async function acceptInvitation(invitationId: string) {
 
     revalidatePath("/dashboard")
     redirect(`/leagues/${invitation.leagueId}`)
+}
+
+export async function acceptInvitationByToken(invitationId: string) {
+    const session = await auth()
+    if (!session?.user?.id || !session.user.email) {
+        return { success: false, message: "Not authenticated" }
+    }
+
+    // Verify user exists in DB
+    const user = await prisma.user.findUnique({ where: { id: session.user.id } })
+    if (!user) {
+        return { success: false, message: "User record not found. Please sign out and sign in again." }
+    }
+
+    const invitation = await prisma.invitation.findUnique({
+        where: { id: invitationId }
+    })
+
+    if (!invitation) {
+        return { success: false, message: "Invitation not found" }
+    }
+
+    if (invitation.status !== "PENDING") {
+        return { success: false, message: "Invitation is no longer valid" }
+    }
+
+    if (invitation.email !== session.user.email) {
+        return { success: false, message: "Email mismatch" }
+    }
+
+    try {
+        // Add to league
+        await prisma.leagueMember.create({
+            data: {
+                userId: session.user.id,
+                leagueId: invitation.leagueId
+            }
+        })
+
+        // Update invitation
+        await prisma.invitation.update({
+            where: { id: invitationId },
+            data: { status: "ACCEPTED" }
+        })
+
+        revalidatePath("/dashboard")
+        return { success: true, message: "Invitation accepted" }
+    } catch (error) {
+        console.error("Error accepting invitation:", error)
+        return { success: false, message: "Failed to accept invitation" }
+    }
+}
+
+export async function declineInvitationByToken(invitationId: string) {
+    const session = await auth()
+    if (!session?.user?.email) {
+        return { success: false, message: "Not authenticated" }
+    }
+
+    const invitation = await prisma.invitation.findUnique({
+        where: { id: invitationId }
+    })
+
+    if (!invitation) {
+        return { success: false, message: "Invitation not found" }
+    }
+
+    if (invitation.status !== "PENDING") {
+        return { success: false, message: "Invitation is no longer valid" }
+    }
+
+    if (invitation.email !== session.user.email) {
+        return { success: false, message: "Email mismatch" }
+    }
+
+    try {
+        // Update invitation status
+        await prisma.invitation.update({
+            where: { id: invitationId },
+            data: { status: "DECLINED" }
+        })
+
+        revalidatePath("/dashboard")
+        return { success: true, message: "Invitation declined" }
+    } catch (error) {
+        console.error("Error declining invitation:", error)
+        return { success: false, message: "Failed to decline invitation" }
+    }
 }
 
 // =======================

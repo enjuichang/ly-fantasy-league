@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { PrismaClient } from '@prisma/client'
+import { prisma } from '@/lib/prisma'
 import { syncRollcallScores, syncProposeScores } from '@/lib/fetchers'
 
 // Initialize Prisma Client
 // In production, this should be a singleton to avoid connection limits
 // But Next.js App Router handles this reasonably well in route handlers
-const prisma = new PrismaClient()
+// const prisma = new PrismaClient()
 
 export const maxDuration = 60 // Set max duration to 60 seconds (Vercel Hobby limit)
 export const dynamic = 'force-dynamic'
