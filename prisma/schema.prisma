@@ -158,6 +158,8 @@ model Legislator {
   picUrl      String?  // Picture URL from API
   leaveFlag   String?  // 是 = on leave, 否 = active
   leaveDate   String?  // Date when legislator went on leave
+  errorFlag   String?  // "是" if there are data fetching issues
+  errorReason String?  // Description of the error
   areaName    String?  // Electoral district/area name
   leaveReason String?  // Reason for leave
   committee   String?  // Committee assignment
@@ -181,11 +183,25 @@ model Score {
 
   date         DateTime
   points       Float
-  reason       String     // e.g. "Voted on Bill X", "Sponsored Bill Y"
-  category     String     // e.g. "VOTE", "BILL_SPONSOR", "BILL_PASS", "NEWS"
+  description  String     // e.g. "Proposed: 道路交通管理處罰條例部分條文修正草案 (字號: 1130201)"
+  category     String     // PROPOSE_BILL, COSIGN_BILL, ROLLCALL_VOTE, MAVERICK_BONUS, FLOOR_SPEECH, WRITTEN_SPEECH
+
+  // Optional bill-specific fields
+  billNumber   String?    // 字號 (e.g. "1130201")
+  billTitle    String?    // 議案名稱
+
+  // Optional vote-specific fields
+  votePosition String?    // "Yea", "Nay", "Present", "Abstain"
+  rollcallNumber String?  // Rollcall vote number
+
+  // Flexible metadata storage for additional details
+  metadata     String?    // JSON string for additional data (law number, status, etc.)
 
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
+
+  @@index([legislatorId, date])
+  @@index([legislatorId, category])
 }
 
 model Matchup {

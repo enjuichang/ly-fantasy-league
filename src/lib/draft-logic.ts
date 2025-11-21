@@ -1,4 +1,4 @@
-import { prisma } from "@/auth"
+import { prisma } from "@/lib/prisma"
 import { generateRoundRobinSchedule } from "./matchup-logic"
 
 export async function runSnakeDraft(leagueId: string) {

@@ -1,12 +1,15 @@
 'use client'
 
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
 import PointsBreakdown from './PointsBreakdown'
 import PlayerHistoryModal from './PlayerHistoryModal'
 import { toggleBenchStatus, dropPlayer } from '@/app/actions'
 import { LeaveIndicator } from '@/components/ui/leave-indicator'
+import { ErrorIndicator } from '@/components/ui/error-indicator'
 
 interface Score {
     id: string
@@ -25,6 +28,8 @@ interface Legislator {
     leaveFlag: string | null
     leaveDate: string | null
     leaveReason: string | null
+    errorFlag?: string | null
+    errorReason?: string | null
     scores: Score[]
 }
 
@@ -53,9 +58,15 @@ export default function TeamRoster({
     benchLegislatorIds,
     isOwner
 }: TeamRosterProps) {
+    const t = useTranslations('teamRoster')
     const [selectedLegislator, setSelectedLegislator] = useState<Legislator | null>(null)
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [isSwapping, setIsSwapping] = useState(false)
+
+    // Swap selection modal state
+    const [showSwapModal, setShowSwapModal] = useState(false)
+    const [playerToMove, setPlayerToMove] = useState<string | null>(null)
+    const [selectedSwapTarget, setSelectedSwapTarget] = useState<string | null>(null)
 
     const benchIds = new Set(benchLegislatorIds)
     const rosterLegislators = legislators.filter(leg => !benchIds.has(leg.id))
@@ -77,7 +88,14 @@ export default function TeamRoster({
         try {
             const result = await toggleBenchStatus(teamId, legislatorId)
             if (!result.success) {
-                alert(result.message)
+                // Check if we need to show swap selection modal
+                if ((result as any).needsSwapSelection) {
+                    setPlayerToMove(legislatorId)
+                    setSelectedSwapTarget(benchLegislators[0]?.id || null)
+                    setShowSwapModal(true)
+                } else {
+                    alert(result.message)
+                }
             }
         } catch (error) {
             console.error('Failed to toggle bench status:', error)
@@ -87,9 +105,35 @@ export default function TeamRoster({
         }
     }
 
+    const handleConfirmSwap = async () => {
+        if (!playerToMove || !selectedSwapTarget) return
+
+        setIsSwapping(true)
+        try {
+            const result = await toggleBenchStatus(teamId, playerToMove, selectedSwapTarget)
+            if (!result.success) {
+                alert(result.message)
+            }
+            setShowSwapModal(false)
+            setPlayerToMove(null)
+            setSelectedSwapTarget(null)
+        } catch (error) {
+            console.error('Failed to swap players:', error)
+            alert('Failed to swap players')
+        } finally {
+            setIsSwapping(false)
+        }
+    }
+
+    const handleCancelSwap = () => {
+        setShowSwapModal(false)
+        setPlayerToMove(null)
+        setSelectedSwapTarget(null)
+    }
+
     const handleDrop = async (legislatorId: string, e: React.MouseEvent) => {
         e.stopPropagation()
-        if (!confirm('Are you sure you want to drop this player?')) return
+        if (!confirm(t('confirmDrop'))) return
 
         setIsSwapping(true)
         try {
@@ -109,7 +153,7 @@ export default function TeamRoster({
         return (
             <div
                 key={leg.id}
-                className="flex items-center gap-4 p-4 border rounded-lg hover:bg-slate-50 transition-colors"
+                className="flex items-center gap-4 p-4 border rounded-lg hover:bg-accent transition-colors"
             >
                 <div
                     className="flex items-center gap-3 flex-1 cursor-pointer"
@@ -122,7 +166,7 @@ export default function TeamRoster({
                             className="w-10 h-10 rounded-full object-cover"
                         />
                     ) : (
-                        <div className="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center text-slate-600 font-semibold">
+                        <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center text-muted-foreground font-semibold">
                             {leg.nameCh.charAt(0)}
                         </div>
                     )}
@@ -134,8 +178,12 @@ export default function TeamRoster({
                                 leaveDate={leg.leaveDate}
                                 leaveReason={leg.leaveReason}
                             />
+                            <ErrorIndicator
+                                errorFlag={leg.errorFlag || null}
+                                errorReason={leg.errorReason || null}
+                            />
                         </div>
-                        <div className="text-sm text-slate-500">{leg.party} • {leg.region}</div>
+                        <div className="text-sm text-muted-foreground">{leg.party} • {leg.region}</div>
                     </div>
                     <div className="text-right">
                         <div className="text-lg font-bold text-blue-600">
@@ -145,11 +193,11 @@ export default function TeamRoster({
                                     return scoreDate >= new Date(currentWeekStart) && scoreDate <= new Date(currentWeekEnd)
                                 })}
                                 totalPoints={currentScore}
-                            /> pts
+                            /> {t('pts')}
                         </div>
                         {weeklyScore && weeklyScore.lastWeek.week > 0 && (
-                            <div className="text-xs text-slate-500">
-                                Last: {weeklyScore.lastWeek.score.toFixed(1)}
+                            <div className="text-xs text-muted-foreground">
+                                {t('last', { score: weeklyScore.lastWeek.score.toFixed(1) })}
                             </div>
                         )}
                     </div>
@@ -162,7 +210,7 @@ export default function TeamRoster({
                             onClick={(e) => handleToggleBench(leg.id, e)}
                             disabled={isSwapping}
                         >
-                            {isBench ? '→ Roster' : '→ Bench'}
+                            {isBench ? t('moveToRoster') : t('moveToBench')}
                         </Button>
                         <Button
                             variant="destructive"
@@ -170,7 +218,7 @@ export default function TeamRoster({
                             onClick={(e) => handleDrop(leg.id, e)}
                             disabled={isSwapping}
                         >
-                            Drop
+                            {t('drop')}
                         </Button>
                     </div>
                 )}
@@ -184,12 +232,12 @@ export default function TeamRoster({
                 {/* Starting Roster */}
                 <Card>
                     <CardHeader>
-                        <CardTitle>Starting Roster ({rosterLegislators.length}/6)</CardTitle>
+                        <CardTitle>{t('startingRoster', { count: rosterLegislators.length })}</CardTitle>
                     </CardHeader>
                     <CardContent>
                         {rosterLegislators.length === 0 ? (
-                            <div className="text-center py-6 text-slate-500">
-                                No players in starting roster
+                            <div className="text-center py-6 text-muted-foreground">
+                                {t('noStarting')}
                             </div>
                         ) : (
                             <div className="space-y-2">
@@ -202,12 +250,12 @@ export default function TeamRoster({
                 {/* Bench */}
                 <Card>
                     <CardHeader>
-                        <CardTitle>Bench ({benchLegislators.length}/3)</CardTitle>
+                        <CardTitle>{t('bench', { count: benchLegislators.length })}</CardTitle>
                     </CardHeader>
                     <CardContent>
                         {benchLegislators.length === 0 ? (
-                            <div className="text-center py-6 text-slate-500">
-                                No players on bench
+                            <div className="text-center py-6 text-muted-foreground">
+                                {t('noBench')}
                             </div>
                         ) : (
                             <div className="space-y-2">
@@ -223,6 +271,62 @@ export default function TeamRoster({
                 isOpen={isModalOpen}
                 onClose={handleCloseModal}
             />
+
+            {/* Swap Selection Modal */}
+            <Dialog open={showSwapModal} onOpenChange={setShowSwapModal}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>{t('swapModal.title')}</DialogTitle>
+                    </DialogHeader>
+                    <div className="space-y-4">
+                        <p className="text-sm text-muted-foreground">
+                            {t('swapModal.description')}
+                        </p>
+                        <div className="space-y-2">
+                            {benchLegislators.map(leg => (
+                                <div
+                                    key={leg.id}
+                                    className={`flex items-center gap-3 p-3 border rounded-lg cursor-pointer transition-colors ${selectedSwapTarget === leg.id
+                                            ? 'border-primary bg-primary/5'
+                                            : 'hover:bg-accent'
+                                        }`}
+                                    onClick={() => setSelectedSwapTarget(leg.id)}
+                                >
+                                    <input
+                                        type="radio"
+                                        checked={selectedSwapTarget === leg.id}
+                                        onChange={() => setSelectedSwapTarget(leg.id)}
+                                        className="cursor-pointer"
+                                    />
+                                    {leg.picUrl ? (
+                                        <img
+                                            src={leg.picUrl}
+                                            alt={leg.nameCh}
+                                            className="w-10 h-10 rounded-full object-cover"
+                                        />
+                                    ) : (
+                                        <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center text-muted-foreground font-semibold">
+                                            {leg.nameCh.charAt(0)}
+                                        </div>
+                                    )}
+                                    <div className="flex-1">
+                                        <div className="font-medium">{leg.nameCh}</div>
+                                        <div className="text-sm text-muted-foreground">{leg.party}</div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={handleCancelSwap} disabled={isSwapping}>
+                            {t('swapModal.cancel')}
+                        </Button>
+                        <Button onClick={handleConfirmSwap} disabled={isSwapping || !selectedSwapTarget}>
+                            {isSwapping ? 'Swapping...' : t('swapModal.confirm')}
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </>
     )
 }

@@ -1,5 +1,6 @@
-import { prisma } from '@/auth'
-import { getWeekDateRange, getTeamWeeklyScore } from './scoring-utils'
+import { prisma } from '@/lib/prisma'
+import { getTeamWeeklyScore } from './scoring-utils'
+import { getWeekDateRange } from './scoring-client'
 
 /**
  * Generate a round-robin schedule for a league

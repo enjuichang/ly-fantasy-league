@@ -145,7 +145,7 @@ export default function PlayerHistoryModal({ legislator, isOpen, onClose }: Play
                                     className="w-16 h-16 rounded-full object-cover"
                                 />
                             ) : (
-                                <div className="w-16 h-16 rounded-full bg-slate-200 flex items-center justify-center text-slate-600 font-bold text-xl">
+                                <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center text-muted-foreground font-bold text-xl">
                                     {legislator.nameCh.charAt(0)}
                                 </div>
                             )}
@@ -200,13 +200,13 @@ export default function PlayerHistoryModal({ legislator, isOpen, onClose }: Play
                                         {/* Week Header */}
                                         <button
                                             onClick={() => toggleWeek(weekKey)}
-                                            className="w-full flex items-center justify-between p-4 hover:bg-slate-50 transition-colors"
+                                            className="w-full flex items-center justify-between p-4 hover:bg-accent transition-colors"
                                         >
                                             <div className="flex items-center gap-3">
                                                 {isExpanded ? (
-                                                    <ChevronDown className="w-5 h-5 text-slate-500" />
+                                                    <ChevronDown className="w-5 h-5 text-muted-foreground" />
                                                 ) : (
-                                                    <ChevronRight className="w-5 h-5 text-slate-500" />
+                                                    <ChevronRight className="w-5 h-5 text-muted-foreground" />
                                                 )}
                                                 <div className="text-left">
                                                     <p className="font-semibold">
@@ -227,13 +227,13 @@ export default function PlayerHistoryModal({ legislator, isOpen, onClose }: Play
 
                                         {/* Expanded Week Details */}
                                         {isExpanded && (
-                                            <div className="border-t bg-slate-50/50 p-4">
+                                            <div className="border-t bg-muted/50 p-4">
                                                 {/* Category Breakdown */}
                                                 <div className="mb-3">
                                                     <p className="text-sm font-semibold mb-2 text-slate-700">Category Breakdown</p>
                                                     <div className="grid grid-cols-2 gap-2">
                                                         {week.categoryBreakdown.map((cat) => (
-                                                            <div key={cat.category} className="flex items-center justify-between bg-white p-2 rounded border">
+                                                            <div key={cat.category} className="flex items-center justify-between bg-card p-2 rounded border">
                                                                 <div>
                                                                     <Badge variant="outline" className="text-xs">
                                                                         {cat.category}
@@ -257,7 +257,7 @@ export default function PlayerHistoryModal({ legislator, isOpen, onClose }: Play
                                                         {week.scores
                                                             .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
                                                             .map((score) => (
-                                                                <div key={score.id} className="flex items-center justify-between bg-white p-2 rounded text-sm border">
+                                                                <div key={score.id} className="flex items-center justify-between bg-card p-2 rounded text-sm border">
                                                                     <div className="flex-1">
                                                                         <p className="text-sm">{score.reason}</p>
                                                                         <p className="text-xs text-muted-foreground">
@@ -283,7 +283,7 @@ export default function PlayerHistoryModal({ legislator, isOpen, onClose }: Play
                             {legislator.scores
                                 .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
                                 .map((score) => (
-                                    <div key={score.id} className="flex items-start justify-between p-3 border rounded-md hover:bg-slate-50">
+                                    <div key={score.id} className="flex items-start justify-between p-3 border rounded-md hover:bg-accent">
                                         <div className="flex-1">
                                             <p className="font-medium">{score.reason}</p>
                                             <div className="flex items-center gap-2 mt-1">

@@ -24,11 +24,12 @@ import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { saveDraftPreferences } from '@/app/actions'
 import PlayerHistoryModal from '@/components/team/PlayerHistoryModal'
-import { calculateAverageScore } from '@/lib/scoring-utils'
+import { calculateAverageScore } from '@/lib/scoring-client'
 import { LeaveIndicator } from '@/components/ui/leave-indicator'
 import LegislatorsList from '@/components/shared/LegislatorsList'
-import { LayoutGrid, List } from 'lucide-react'
-import type { CategoryScores } from '@/lib/scoring-utils'
+import { useTranslations } from 'next-intl'
+
+import type { CategoryScores } from '@/lib/scoring-client'
 
 interface Legislator {
     id: string
@@ -59,6 +60,7 @@ interface DraftQueueProps {
 }
 
 function SortableItem({ id, legislator, onRemove, onViewHistory }: { id: string, legislator: Legislator, onRemove: (id: string) => void, onViewHistory: (legislator: Legislator) => void }) {
+    const t = useTranslations('draft.queue')
     const {
         attributes,
         listeners,
@@ -78,9 +80,9 @@ function SortableItem({ id, legislator, onRemove, onViewHistory }: { id: string,
     }, [legislator.scores])
 
     return (
-        <div ref={setNodeRef} style={style} className="flex items-center justify-between p-3 bg-white border rounded-md shadow-sm mb-2 hover:border-blue-400">
+        <div ref={setNodeRef} style={style} className="flex items-center justify-between p-3 bg-card border rounded-md shadow-sm mb-2 hover:border-primary">
             <div {...attributes} {...listeners} className="flex items-center gap-3 cursor-move flex-1">
-                <div className="w-6 h-6 bg-slate-100 rounded-full flex items-center justify-center text-xs font-bold text-slate-500">
+                <div className="w-6 h-6 bg-muted rounded-full flex items-center justify-center text-xs font-bold text-muted-foreground">
                     ::
                 </div>
                 {legislator.picUrl ? (
@@ -90,7 +92,7 @@ function SortableItem({ id, legislator, onRemove, onViewHistory }: { id: string,
                         className="w-10 h-10 rounded-full object-cover"
                     />
                 ) : (
-                    <div className="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center text-slate-600 font-semibold">
+                    <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center text-muted-foreground font-semibold">
                         {legislator.nameCh.charAt(0)}
                     </div>
                 )}
@@ -107,7 +109,7 @@ function SortableItem({ id, legislator, onRemove, onViewHistory }: { id: string,
                 </div>
                 <div className="text-right mr-2">
                     <p className="text-sm font-semibold text-blue-600">{avgScore.toFixed(1)}</p>
-                    <p className="text-xs text-muted-foreground">avg/wk</p>
+                    <p className="text-xs text-muted-foreground">{t('avgPerWeek')}</p>
                 </div>
             </div>
             <div className="flex gap-1">
@@ -118,8 +120,8 @@ function SortableItem({ id, legislator, onRemove, onViewHistory }: { id: string,
                         e.stopPropagation()
                         onViewHistory(legislator)
                     }}
-                    className="text-blue-500 hover:text-blue-700 hover:bg-blue-50"
-                    title="View history"
+                    className="text-primary hover:text-primary hover:bg-primary/10"
+                    title={t('viewHistory')}
                 >
                     📊
                 </Button>
@@ -131,7 +133,7 @@ function SortableItem({ id, legislator, onRemove, onViewHistory }: { id: string,
                         onRemove(id)
                     }}
                     className="text-red-500 hover:text-red-700 hover:bg-red-50"
-                    title="Remove"
+                    title={t('remove')}
                 >
                     ✕
                 </Button>
@@ -141,9 +143,10 @@ function SortableItem({ id, legislator, onRemove, onViewHistory }: { id: string,
 }
 
 export default function DraftQueue({ leagueId, initialPreferences, allLegislators, seasonStart }: DraftQueueProps) {
+    const t = useTranslations('draft.queue')
     const [preferences, setPreferences] = useState<Legislator[]>(initialPreferences)
     const [search, setSearch] = useState("")
-    const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
+
     const [isSaving, setIsSaving] = useState(false)
     const [selectedLegislator, setSelectedLegislator] = useState<Legislator | null>(null)
     const [isModalOpen, setIsModalOpen] = useState(false)
@@ -216,120 +219,44 @@ export default function DraftQueue({ leagueId, initialPreferences, allLegislator
             {/* Left: Available Pool */}
             <Card className="flex flex-col h-full">
                 <CardHeader>
-                    <div className="flex items-center justify-between mb-2">
-                        <CardTitle>Available Legislators</CardTitle>
-                        <div className="inline-flex rounded-md shadow-sm" role="group">
-                            <Button
-                                variant={viewMode === 'grid' ? 'default' : 'outline'}
-                                size="sm"
-                                onClick={() => setViewMode('grid')}
-                                className="rounded-r-none"
-                            >
-                                <LayoutGrid className="h-4 w-4" />
-                            </Button>
-                            <Button
-                                variant={viewMode === 'list' ? 'default' : 'outline'}
-                                size="sm"
-                                onClick={() => setViewMode('list')}
-                                className="rounded-l-none"
-                            >
-                                <List className="h-4 w-4" />
-                            </Button>
-                        </div>
-                    </div>
+                    <CardTitle>{t('available')}</CardTitle>
                     <Input
-                        placeholder="Search by name or party..."
+                        placeholder={t('searchPlaceholder')}
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
                         className="mt-2"
                     />
                 </CardHeader>
                 <CardContent className="flex-1 overflow-y-auto">
-                    {viewMode === 'list' ? (
-                        <LegislatorsList
-                            legislators={availableLegislators.map(leg => ({
-                                ...leg,
-                                nameEn: leg.nameEn || null,
-                                region: leg.region || null,
-                                lastWeekScores: leg.lastWeekScores || { PROPOSE_BILL: 0, COSIGN_BILL: 0, FLOOR_SPEECH: 0, total: 0 },
-                                averageScores: leg.averageScores || { PROPOSE_BILL: 0, COSIGN_BILL: 0, FLOOR_SPEECH: 0, total: 0 }
-                            }))}
-                            onLegislatorClick={handleLegislatorClick}
-                            onActionClick={(leg, e) => {
-                                e.stopPropagation()
-                                addToQueue(leg as Legislator)
-                            }}
-                            actionLabel="Add"
-                            showActions={true}
-                        />
-                    ) : (
-                        <div className="space-y-2">
-                            {availableLegislators.map(leg => {
-                            const avgScore = leg.scores && leg.scores.length > 0
-                                ? calculateAverageScore(leg.scores)
-                                : 0
-
-                            return (
-                                <div
-                                    key={leg.id}
-                                    className="flex items-center justify-between p-3 border rounded-md hover:bg-slate-50 cursor-pointer"
-                                    onClick={() => handleLegislatorClick(leg)}
-                                >
-                                    <div className="flex items-center gap-3 flex-1">
-                                        {leg.picUrl ? (
-                                            <img
-                                                src={leg.picUrl}
-                                                alt={leg.nameCh}
-                                                className="w-10 h-10 rounded-full object-cover"
-                                            />
-                                        ) : (
-                                            <div className="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center text-slate-600 font-semibold">
-                                                {leg.nameCh.charAt(0)}
-                                            </div>
-                                        )}
-                                        <div className="flex-1">
-                                            <div className="flex items-center gap-2">
-                                                <p className="font-medium">{leg.nameCh}</p>
-                                                <LeaveIndicator
-                                                    leaveFlag={leg.leaveFlag || null}
-                                                    leaveDate={leg.leaveDate || null}
-                                                    leaveReason={leg.leaveReason || null}
-                                                />
-                                            </div>
-                                            <p className="text-xs text-muted-foreground">{leg.party}</p>
-                                        </div>
-                                        <div className="text-right mr-2">
-                                            <p className="text-sm font-semibold text-blue-600">{avgScore.toFixed(1)}</p>
-                                            <p className="text-xs text-muted-foreground">avg/wk</p>
-                                        </div>
-                                    </div>
-                                    <Button
-                                        size="sm"
-                                        variant="secondary"
-                                        onClick={(e) => {
-                                            e.stopPropagation()
-                                            addToQueue(leg)
-                                        }}
-                                    >
-                                        Add
-                                    </Button>
-                                </div>
-                            )
-                            })}
-                            {availableLegislators.length === 0 && (
-                                <p className="text-center text-muted-foreground py-4">No matching legislators found.</p>
-                            )}
-                        </div>
-                    )}
+                    <LegislatorsList
+                        legislators={availableLegislators.map(leg => ({
+                            ...leg,
+                            nameEn: leg.nameEn || null,
+                            region: leg.region || null,
+                            leaveFlag: leg.leaveFlag || null,
+                            leaveDate: leg.leaveDate || null,
+                            leaveReason: leg.leaveReason || null,
+                            picUrl: leg.picUrl || null,
+                            lastWeekScores: leg.lastWeekScores || { PROPOSE_BILL: 0, COSIGN_BILL: 0, FLOOR_SPEECH: 0, WRITTEN_SPEECH: 0, ROLLCALL_VOTE: 0, MAVERICK_BONUS: 0, total: 0 },
+                            averageScores: leg.averageScores || { PROPOSE_BILL: 0, COSIGN_BILL: 0, FLOOR_SPEECH: 0, WRITTEN_SPEECH: 0, ROLLCALL_VOTE: 0, MAVERICK_BONUS: 0, total: 0 }
+                        }))}
+                        onLegislatorClick={handleLegislatorClick}
+                        onActionClick={(leg, e) => {
+                            e.stopPropagation()
+                            addToQueue(leg as Legislator)
+                        }}
+                        actionLabel={t('add')}
+                        showActions={true}
+                    />
                 </CardContent>
             </Card>
 
             {/* Right: Preference Queue */}
-            <Card className="flex flex-col h-full border-blue-200 bg-blue-50/30">
+            <Card className="flex flex-col h-full border-primary/30 bg-primary/10">
                 <CardHeader className="flex flex-row items-center justify-between">
-                    <CardTitle>Your Queue ({preferences.length})</CardTitle>
+                    <CardTitle>{t('yourQueue', { count: preferences.length })}</CardTitle>
                     <Button onClick={handleSave} disabled={isSaving}>
-                        {isSaving ? "Saving..." : "Save Changes"}
+                        {isSaving ? t('saving') : t('save')}
                     </Button>
                 </CardHeader>
                 <CardContent className="flex-1 overflow-y-auto">
@@ -355,12 +282,12 @@ export default function DraftQueue({ leagueId, initialPreferences, allLegislator
                     </DndContext>
                     {preferences.length === 0 && (
                         <div className="text-center py-10 text-muted-foreground border-2 border-dashed rounded-md">
-                            <p>Your queue is empty.</p>
-                            <p className="text-sm">Add players from the left to build your priority list.</p>
+                            <p>{t('empty')}</p>
+                            <p className="text-sm">{t('emptyDescription')}</p>
                         </div>
                     )}
-                    <div className="mt-4 p-3 bg-yellow-50 text-yellow-800 text-xs rounded-md">
-                        <strong>Note:</strong> If your queue is empty or all your preferred players are taken, the system will automatically draft a random available player to fill your roster.
+                    <div className="mt-4 p-3 bg-amber-500/10 text-amber-700 dark:text-amber-400 text-xs rounded-md">
+                        <strong>Note:</strong> {t('autoDraftNote')}
                     </div>
                 </CardContent>
             </Card>

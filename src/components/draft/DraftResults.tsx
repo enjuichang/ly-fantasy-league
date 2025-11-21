@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useTranslations } from 'next-intl'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -40,6 +41,7 @@ interface DraftResultsProps {
 }
 
 export default function DraftResults({ picks }: DraftResultsProps) {
+    const t = useTranslations('draft.results')
     const [currentRound, setCurrentRound] = useState(0)
     const [isPlaying, setIsPlaying] = useState(false)
     const [speed, setSpeed] = useState(1000) // ms per round
@@ -99,28 +101,28 @@ export default function DraftResults({ picks }: DraftResultsProps) {
         <Card>
             <CardHeader>
                 <div className="flex items-center justify-between">
-                    <CardTitle>Draft Results</CardTitle>
+                    <CardTitle>{t('title')}</CardTitle>
                     <div className="flex gap-2">
                         <Button onClick={startAnimation} disabled={isPlaying} size="sm">
-                            {isPlaying ? "Playing..." : "▶ Replay"}
+                            {isPlaying ? t('playing') : `▶ ${t('replay')}`}
                         </Button>
                         <Button onClick={showAll} variant="outline" size="sm">
-                            Show All
+                            {t('showAll')}
                         </Button>
                         <select
                             value={speed}
                             onChange={(e) => setSpeed(Number(e.target.value))}
                             className="px-2 border rounded text-sm"
                         >
-                            <option value={500}>Fast</option>
-                            <option value={1000}>Normal</option>
-                            <option value={2000}>Slow</option>
+                            <option value={500}>{t('speedFast')}</option>
+                            <option value={1000}>{t('speedNormal')}</option>
+                            <option value={2000}>{t('speedSlow')}</option>
                         </select>
                     </div>
                 </div>
                 {currentRound > 0 && (
                     <div className="text-sm text-muted-foreground">
-                        Round {currentRound} of {maxRound}
+                        {t('round', { current: currentRound, total: maxRound })}
                     </div>
                 )}
             </CardHeader>
@@ -141,7 +143,7 @@ export default function DraftResults({ picks }: DraftResultsProps) {
                                         Round {round}
                                     </Badge>
                                     {isVisible && (
-                                        <div className="h-px flex-1 bg-slate-200"></div>
+                                        <div className="h-px flex-1 bg-border"></div>
                                     )}
                                 </div>
                                 {isVisible && (
@@ -149,7 +151,7 @@ export default function DraftResults({ picks }: DraftResultsProps) {
                                         {roundPicks.map((pick, idx) => (
                                             <div
                                                 key={pick.id}
-                                                className="flex items-center justify-between border-b pb-2 last:border-0 animate-in fade-in slide-in-from-left cursor-pointer hover:bg-slate-50 rounded px-2 -mx-2"
+                                                className="flex items-center justify-between border-b pb-2 last:border-0 animate-in fade-in slide-in-from-left cursor-pointer hover:bg-accent rounded px-2 -mx-2"
                                                 style={{
                                                     animationDelay: `${idx * 100}ms`,
                                                     animationDuration: '300ms',
@@ -168,7 +170,7 @@ export default function DraftResults({ picks }: DraftResultsProps) {
                                                             className="w-10 h-10 rounded-full object-cover"
                                                         />
                                                     ) : (
-                                                        <div className="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center text-slate-600 font-semibold">
+                                                        <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center text-muted-foreground font-semibold">
                                                             {pick.legislator.nameCh.charAt(0)}
                                                         </div>
                                                     )}

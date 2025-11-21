@@ -1,0 +1,468 @@
+{
+
+  "home": {
+    "hero": {
+      "title": "Fantasy Legislative Yuan",
+      "description": "Draft legislators, track their performance, and compete with friends based on real parliamentary data.",
+      "goToDashboard": "Go to Dashboard",
+      "startPlaying": "Start Playing",
+      "howToPlay": "How to Play",
+      "viewLegislators": "View Legislator Stats"
+    },
+    "stats": {
+      "legislators": "Legislators",
+      "votesTracked": "Votes Tracked",
+      "scoreTypes": "Score Types"
+    },
+    "features": {
+      "title": "Features",
+      "realData": {
+        "title": "Real Legislative Data",
+        "description": "Scores are based on actual parliamentary activities including bill proposals, speeches, and voting records."
+      },
+      "competitive": {
+        "title": "Competitive Gameplay",
+        "description": "Form leagues, draft teams, and compete against friends in weekly matchups."
+      }
+    },
+    "footer": "© 2024 Fantasy Legislative Yuan. All rights reserved."
+  },
+  "dashboard": {
+    "title": "My Leagues",
+    "invitations": {
+      "title": "Pending Invitations",
+      "invitedBy": "Invited by {name}",
+      "accept": "Accept Invitation"
+    },
+    "createLeague": {
+      "title": "Create New League",
+      "description": "Start a new season with friends",
+      "labelName": "League Name",
+      "placeholderName": "e.g. Taipei Politicos",
+      "submit": "Create League"
+    },
+    "joinLeague": {
+      "title": "Join a League",
+      "description": "Enter a League ID to join",
+      "labelId": "League ID",
+      "placeholderId": "Paste League ID here",
+      "submit": "Join League"
+    },
+    "league": {
+      "seasonStarts": "Season starts: {date}",
+      "teamsCount": "{count} Teams",
+      "view": "View League"
+    }
+  },
+  "leaguePage": {
+    "standings": {
+      "title": "Standings",
+      "leagueId": "League ID:",
+      "rank": "Rank",
+      "team": "Team",
+      "owner": "Owner",
+      "record": "Record",
+      "winPercentage": "Win %",
+      "pf": "PF",
+      "pa": "PA"
+    }
+  },
+  "draft": {
+    "title": "Draft Room",
+    "status": "Status: {status}",
+    "commissionerControls": {
+      "title": "Commissioner Controls",
+      "description": "Start the draft when everyone is ready.",
+      "startSnakeDraft": "Run Snake Draft Now"
+    },
+    "queue": {
+      "noTeam": "You need to create a team before you can participate in the draft.",
+      "available": "Available Legislators",
+      "searchPlaceholder": "Search by name or party...",
+      "yourQueue": "Your Queue ({count})",
+      "save": "Save Changes",
+      "saving": "Saving...",
+      "empty": "Your queue is empty.",
+      "emptyDescription": "Add players from the left to build your priority list.",
+      "autoDraftNote": "Note: If your queue is empty or all your preferred players are taken, the system will automatically draft a random available player to fill your roster.",
+      "avgPerWeek": "avg/wk",
+      "viewHistory": "View history",
+      "remove": "Remove",
+      "add": "Add"
+    },
+    "results": {
+      "title": "Draft Results",
+      "replay": "Replay",
+      "playing": "Playing...",
+      "showAll": "Show All",
+      "round": "Round {current} of {total}",
+      "speedFast": "Fast",
+      "speedNormal": "Normal",
+      "speedSlow": "Slow"
+    }
+  },
+  "team": {
+    "create": {
+      "title": "Create Your Team",
+      "description": "You need a team to participate in {leagueName}",
+      "labelName": "Team Name",
+      "placeholderName": "e.g. The Lawmakers",
+      "submit": "Create Team"
+    },
+    "totalPoints": "Total Points: {points}"
+  },
+  "teamRoster": {
+    "startingRoster": "Starting Roster ({count}/6)",
+    "bench": "Bench ({count}/3)",
+    "noStarting": "No players in starting roster",
+    "noBench": "No players on bench",
+    "moveToRoster": "→ Roster",
+    "moveToBench": "→ Bench",
+    "drop": "Drop",
+    "confirmDrop": "Are you sure you want to drop this player?",
+    "last": "Last: {score}",
+    "pts": "pts",
+    "swapModal": {
+      "title": "Select Player to Swap",
+      "description": "Your bench is full. Select which bench player to swap with:",
+      "cancel": "Cancel",
+      "confirm": "Swap"
+    }
+  },
+  "myTeamPage": {
+    "title": "My Team"
+  },
+  "leagueLayout": {
+    "commissioner": {
+      "label": "Commissioner: {name}",
+      "you": "You",
+      "someoneElse": "Someone else"
+    },
+    "nav": {
+      "standings": "Standings",
+      "matchups": "Matchups",
+      "myTeam": "My Team",
+      "players": "Players",
+      "activity": "Activity",
+      "draft": "Draft",
+      "settings": "Settings"
+    }
+  },
+  "settings": {
+    "title": "League Settings",
+    "season": {
+      "title": "Season Settings",
+      "description": "Configure the length of your fantasy season.",
+      "labelTotalWeeks": "Total Weeks",
+      "helpTotalWeeks": "Number of weeks in the regular season (1-52)",
+      "update": "Update"
+    },
+    "schedule": {
+      "title": "Matchup Schedule",
+      "description_count": "{count} matchups currently scheduled",
+      "description_none": "No matchups generated yet",
+      "generate": "Generate Schedule",
+      "regenerate": "Regenerate Schedule",
+      "warning": "Warning: This will delete all existing matchups and create new ones."
+    },
+    "invite": {
+      "title": "Invite Players",
+      "description": "Send an email invitation to join this league.",
+      "labelEmail": "Email Address",
+      "placeholderEmail": "friend@example.com",
+      "submit": "Send Invite"
+    },
+    "pending": {
+      "title": "Pending Invitations",
+      "description": "Track the status of sent invitations.",
+      "table": {
+        "email": "Email",
+        "status": "Status",
+        "sentAt": "Sent At"
+      },
+      "noInvites": "No pending invitations"
+    }
+  },
+  "rulesPage": {
+    "backToHome": "← Back to Home",
+    "title": "How to Play",
+    "intro": "Welcome to Fantasy Legislative Yuan! Compete with friends by drafting Taiwanese legislators and earning points based on their real legislative activities.",
+    "overview": {
+      "title": "Game Overview",
+      "step1": {
+        "title": "1. Create or Join a League",
+        "description": "Start by creating a new league or joining an existing one with friends."
+      },
+      "step2": {
+        "title": "2. Draft Your Team",
+        "description": "Participate in a snake draft to build your roster of 9 legislators (6 starters + 3 bench)."
+      },
+      "step3": {
+        "title": "3. Manage Your Roster",
+        "description": "Set your starting lineup, make trades, and pick up/drop players throughout the season."
+      },
+      "step4": {
+        "title": "4. Compete Weekly",
+        "description": "Face off against other teams in head-to-head matchups. The team with the most points wins!"
+      }
+    },
+    "scoring": {
+      "title": "Scoring System",
+      "description": "Points are awarded based on real legislative activities",
+      "billProposals": {
+        "title": "Bill Proposals",
+        "points": "6 points each",
+        "description": "Proposing new legislation",
+        "cap": "No weekly cap"
+      },
+      "billProposalsPassed": {
+        "title": "Bill Proposals (Passed)",
+        "points": "12 points each",
+        "description": "Proposed bills that pass (三讀通過)",
+        "cap": "6pt base + 6pt bonus = 12pts total"
+      },
+      "cosignedBills": {
+        "title": "Co-signed Bills (Passed)",
+        "points": "3 points each",
+        "description": "Co-signing bills that pass (三讀通過)",
+        "cap": "Only passed bills count"
+      },
+      "floorSpeeches": {
+        "title": "Floor Speeches",
+        "points": "1 point each",
+        "description": "Speaking during legislative sessions",
+        "cap": "Weekly cap: 5 points"
+      },
+      "writtenInterpellations": {
+        "title": "Written Interpellations",
+        "points": "1 point each",
+        "description": "Submitting written questions to government officials",
+        "cap": "Weekly cap: 5 points"
+      },
+      "rollCallVotes": {
+        "title": "Roll Call Votes",
+        "points": "1 point each",
+        "description": "Participating in recorded votes",
+        "cap": "No weekly cap"
+      },
+      "maverickBonus": {
+        "title": "Maverick Bonus",
+        "points": "3-9 points",
+        "description": "Voting against party line on roll calls",
+        "details": {
+          "p3": "• 3 points: 70%+ of party voted opposite",
+          "p6": "• 6 points: 80%+ of party voted opposite",
+          "p9": "• 9 points: 90%+ of party voted opposite"
+        }
+      }
+    },
+    "roster": {
+      "title": "Roster Rules",
+      "size": {
+        "title": "Roster Size",
+        "description": "9 total legislators: 6 starters + 3 bench"
+      },
+      "scoring": {
+        "title": "Scoring",
+        "description": "Only your 6 starting legislators earn points for your team. Bench players do not contribute to your weekly score."
+      },
+      "leave": {
+        "title": "Leave Status",
+        "description": "Legislators on leave (marked with <badge></badge>) do not earn points while absent."
+      },
+      "moves": {
+        "title": "Roster Moves",
+        "description": "You can pick up free agents and drop players from your roster at any time. When your roster is full, you must drop a player to add a new one."
+      }
+    },
+    "draft": {
+      "title": "Draft Rules",
+      "snake": {
+        "title": "Snake Draft Format",
+        "description": "The draft order reverses each round. For example, with 4 teams:",
+        "example": {
+          "r1": "Round 1: Team 1, 2, 3, 4",
+          "r2": "Round 2: Team 4, 3, 2, 1",
+          "r3": "Round 3: Team 1, 2, 3, 4"
+        }
+      },
+      "queue": {
+        "title": "Draft Queue",
+        "description": "Before the draft, you can create a ranked preference list of legislators. During the draft, the system will automatically pick the highest-ranked available legislator from your queue."
+      },
+      "auto": {
+        "title": "Auto-Draft",
+        "description": "If your preference queue is empty, the system will randomly select an available legislator for you."
+      }
+    },
+    "matchups": {
+      "title": "Weekly Matchups",
+      "schedule": {
+        "title": "Schedule",
+        "description": "Each week runs from Monday to Sunday. Teams are matched up in head-to-head competitions."
+      },
+      "winning": {
+        "title": "Winning",
+        "description": "The team with the most total points from their 6 starters wins the matchup."
+      },
+      "standings": {
+        "title": "Standings",
+        "description": "Teams are ranked by wins, losses, and total points scored throughout the season."
+      }
+    },
+    "strategy": {
+      "title": "Strategy Tips",
+      "average": {
+        "title": "Check Average Scores",
+        "description": "Look at legislators' average points per week to identify consistent performers."
+      },
+      "bench": {
+        "title": "Manage Your Bench",
+        "description": "Keep active legislators on your bench in case starters go on leave."
+      },
+      "activity": {
+        "title": "Monitor Activity",
+        "description": "Check the Activity feed to see recent pickups and drops by other teams."
+      },
+      "diversify": {
+        "title": "Diversify Your Team",
+        "description": "Draft legislators from different committees to maximize scoring opportunities."
+      }
+    },
+    "goToDashboard": "Go to Dashboard"
+  },
+  "playersPage": {
+    "title": "Undrafted Legislators",
+    "subtitle": "Available to pick up • Click a player to view history"
+  },
+  "playersGrid": {
+    "add": "Add",
+    "pickupModal": {
+      "title": "Pick Up Player",
+      "description": "Add this player to your roster.",
+      "descriptionFull": "Your roster is full. Select a player to drop.",
+      "adding": "Adding",
+      "lastWeek": "Last Week",
+      "selectDrop": "Select player to drop:",
+      "cancel": "Cancel",
+      "confirm": "Confirm",
+      "processing": "Processing...",
+      "bench": "Bench"
+    }
+  },
+  "matchupsPage": {
+    "title": "Matchups",
+    "week": "Week {week} of {total}",
+    "currentWeek": "Current Week",
+    "calculateScores": "Calculate Scores",
+    "noMatchups": {
+      "title": "No matchups scheduled for this week yet.",
+      "description": "Matchups will be generated automatically after the draft completes."
+    },
+    "bye": "BYE",
+    "byeWeek": "Bye Week",
+    "vs": "VS",
+    "total": "Total",
+    "scoresCalculated": "Scores calculated"
+  },
+  "activityPage": {
+    "title": "League Activity",
+    "subtitle": "Recent transactions and updates",
+    "recentActivity": "Recent Activity",
+    "noActivity": "No activity yet"
+  },
+  "common": {
+    "rules": "Rules",
+    "dashboard": "Dashboard",
+    "signOut": "Sign Out",
+    "pleaseSignIn": "Please sign in",
+    "leagueNotFound": "League not found",
+    "commissionerOnly": "Only the commissioner can access settings."
+  },
+  "playerHistoryModal": {
+    "avgPerWeek": "Avg Per Week",
+    "weeklySummary": "Weekly Summary",
+    "allEvents": "All Events",
+    "noActivity": "No scoring activity yet.",
+    "weekOf": "Week of {date}",
+    "categoryBreakdown": "Category Breakdown",
+    "activities": "Activities",
+    "activity": "activity",
+    "activitiesPlural": "activities"
+  },
+  "leaveIndicator": {
+    "title": "On Leave - Not Earning Points",
+    "leaveDate": "Leave Date:",
+    "reason": "Reason:"
+  },
+  "errorIndicator": {
+    "title": "Data Fetching Issue",
+    "issue": "Issue:",
+    "support": "This legislator may have incomplete scoring data. Contact support if this persists."
+  },
+  "legislatorsPage": {
+    "title": "Legislator Stats",
+    "subtitle": "Click any legislator to view their detailed history",
+    "backToHome": "← Back to Home",
+    "photo": "Photo",
+    "name": "Name",
+    "party": "Party",
+    "region": "Region",
+    "totalPoints": "Total Points",
+    "weeklyAverage": "Weekly Avg",
+    "searchPlaceholder": "Search by name or party...",
+    "noResults": "No legislators found matching your search",
+    "browseAll": "Browse Legislators"
+  },
+  "legislatorsList": {
+    "photo": "Photo",
+    "name": "Name",
+    "party": "Party",
+    "region": "Region",
+    "lastWeek": "Last Week",
+    "average": "Average",
+    "propose": "Propose",
+    "cosign": "Cosign",
+    "floor": "Floor",
+    "written": "Written",
+    "vote": "Vote",
+    "mav": "Mav",
+    "total": "Total",
+    "actions": "Actions",
+    "noLegislatorsFound": "No legislators found"
+  },
+  "legislatorDetailPage": {
+    "backToList": "← Back to Legislators",
+    "weeklyAverage": "Weekly Average",
+    "pointsPerWeek": "pts/week",
+    "pointsGraph": "Points Over Time",
+    "recentWeeks": "Last {weeks} Weeks",
+    "tabs": {
+      "all": "All Activity",
+      "legislation": "Legislation",
+      "votes": "Votes",
+      "speeches": "Speeches",
+      "interpellations": "Interpellations"
+    },
+    "tableHeaders": {
+      "date": "Date",
+      "action": "Action",
+      "points": "Points"
+    },
+    "noActivity": "No scoring activity recorded yet",
+    "partyLabel": "Party",
+    "regionLabel": "Region"
+  },
+  "signInPage": {
+    "title": "Sign In",
+    "subtitle": "Sign in to your Fantasy Legislative Yuan account",
+    "googleButton": "Sign in with Google",
+    "orDivider": "OR",
+    "emailLabel": "Email",
+    "emailPlaceholder": "your@email.com",
+    "passwordLabel": "Password",
+    "passwordPlaceholder": "Enter your password",
+    "submitButton": "Sign In",
+    "signingIn": "Signing in..."
+  }
+}

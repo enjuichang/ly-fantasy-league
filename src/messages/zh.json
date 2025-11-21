@@ -1,0 +1,468 @@
+{
+
+  "home": {
+    "hero": {
+      "title": "夢幻立法院",
+      "description": "選秀立法委員，追蹤他們的表現，並根據真實的議會數據與朋友競爭。",
+      "goToDashboard": "前往主頁",
+      "startPlaying": "開始遊戲",
+      "howToPlay": "遊戲規則",
+      "viewLegislators": "查看立委數據"
+    },
+    "stats": {
+      "legislators": "立法委員",
+      "votesTracked": "表決追蹤",
+      "scoreTypes": "計分項目"
+    },
+    "features": {
+      "title": "特色",
+      "realData": {
+        "title": "真實議會數據",
+        "description": "分數基於實際的議會活動，包括提案、質詢和投票記錄。"
+      },
+      "competitive": {
+        "title": "競爭性遊戲",
+        "description": "建立聯盟，選秀隊伍，並在每週的對決中與朋友一較高下。"
+      }
+    },
+    "footer": "© 2025 夢幻立法院. 版權所有."
+  },
+  "dashboard": {
+    "title": "我的聯盟",
+    "invitations": {
+      "title": "待處理邀請",
+      "invitedBy": "邀請人：{name}",
+      "accept": "接受邀請"
+    },
+    "createLeague": {
+      "title": "建立新聯盟",
+      "description": "與朋友開始新的賽季",
+      "labelName": "聯盟名稱",
+      "placeholderName": "例如：台北政治家",
+      "submit": "建立聯盟"
+    },
+    "joinLeague": {
+      "title": "加入聯盟",
+      "description": "輸入聯盟 ID 加入",
+      "labelId": "聯盟 ID",
+      "placeholderId": "在此貼上聯盟 ID",
+      "submit": "加入聯盟"
+    },
+    "league": {
+      "seasonStarts": "賽季開始：{date}",
+      "teamsCount": "{count} 支隊伍",
+      "view": "查看聯盟"
+    }
+  },
+  "leaguePage": {
+    "standings": {
+      "title": "戰績表",
+      "leagueId": "聯盟 ID：",
+      "rank": "排名",
+      "team": "隊伍",
+      "owner": "持有者",
+      "record": "戰績",
+      "winPercentage": "勝率",
+      "pf": "總得分",
+      "pa": "總失分"
+    }
+  },
+  "draft": {
+    "title": "選秀室",
+    "status": "狀態：{status}",
+    "commissionerControls": {
+      "title": "主席控制",
+      "description": "當所有人都準備好時開始選秀。",
+      "startSnakeDraft": "立即執行蛇形選秀"
+    },
+    "queue": {
+      "noTeam": "您需要先建立隊伍才能參加選秀。",
+      "available": "可選立法委員",
+      "searchPlaceholder": "搜尋姓名或政黨...",
+      "yourQueue": "您的選秀順序 ({count})",
+      "save": "儲存變更",
+      "saving": "儲存中...",
+      "empty": "您的選秀順序是空的。",
+      "emptyDescription": "從左側添加立法委員以建立您的選秀順序。",
+      "autoDraftNote": "注意:如果您的選秀順序為空或所有首選立法委員都已被選走,系統將自動選秀一名隨機可用的立法委員來填補您的名單。",
+      "avgPerWeek": "平均/週",
+      "viewHistory": "查看歷史",
+      "remove": "移除",
+      "add": "加入"
+    },
+    "results": {
+      "title": "選秀結果",
+      "replay": "重播",
+      "playing": "播放中...",
+      "showAll": "顯示全部",
+      "round": "第 {current} 輪 / 共 {total} 輪",
+      "speedFast": "快速",
+      "speedNormal": "正常",
+      "speedSlow": "慢速"
+    }
+  },
+  "team": {
+    "create": {
+      "title": "建立您的隊伍",
+      "description": "您需要一支隊伍才能參加聯盟 {leagueName}",
+      "labelName": "隊伍名稱",
+      "placeholderName": "例如：立法者",
+      "submit": "建立隊伍"
+    },
+    "totalPoints": "總分：{points}"
+  },
+  "teamRoster": {
+    "startingRoster": "先發陣容 ({count}/6)",
+    "bench": "板凳 ({count}/3)",
+    "noStarting": "先發陣容無委員",
+    "noBench": "板凳無委員",
+    "moveToRoster": "→ 先發",
+    "moveToBench": "→ 板凳",
+    "drop": "放棄",
+    "confirmDrop": "你確定要放棄這位委員嗎？",
+    "last": "上次：{score}",
+    "pts": "分",
+    "swapModal": {
+      "title": "選擇要交換的委員",
+      "description": "您的板凳已滿。選擇要交換的板凳委員：",
+      "cancel": "取消",
+      "confirm": "交換"
+    }
+  },
+  "myTeamPage": {
+    "title": "我的隊伍"
+  },
+  "leagueLayout": {
+    "commissioner": {
+      "label": "主席：{name}",
+      "you": "您",
+      "someoneElse": "其他人"
+    },
+    "nav": {
+      "standings": "戰績表",
+      "matchups": "對決",
+      "myTeam": "我的隊伍",
+      "players": "委員",
+      "activity": "活動",
+      "draft": "選秀",
+      "settings": "設定"
+    }
+  },
+  "settings": {
+    "title": "聯盟設定",
+    "season": {
+      "title": "賽季設定",
+      "description": "設定您的夢幻賽季長度。",
+      "labelTotalWeeks": "總週數",
+      "helpTotalWeeks": "例行賽週數 (1-52)",
+      "update": "更新"
+    },
+    "schedule": {
+      "title": "對決賽程",
+      "description_count": "目前已排定 {count} 場對決",
+      "description_none": "尚未產生賽程",
+      "generate": "產生賽程",
+      "regenerate": "重新產生賽程",
+      "warning": "警告：這將刪除所有現有的對決並建立新的對決。"
+    },
+    "invite": {
+      "title": "邀請玩家",
+      "description": "發送電子郵件邀請加入此聯盟。",
+      "labelEmail": "電子郵件地址",
+      "placeholderEmail": "friend@example.com",
+      "submit": "發送邀請"
+    },
+    "pending": {
+      "title": "待處理邀請",
+      "description": "追蹤已發送邀請的狀態。",
+      "table": {
+        "email": "電子郵件",
+        "status": "狀態",
+        "sentAt": "發送時間"
+      },
+      "noInvites": "無待處理邀請"
+    }
+  },
+  "rulesPage": {
+    "backToHome": "← 返回首頁",
+    "title": "遊戲規則",
+    "intro": "歡迎來到夢幻立法院！與朋友競爭，選秀台灣立法委員，並根據他們真實的立法活動賺取積分。",
+    "overview": {
+      "title": "遊戲概覽",
+      "step1": {
+        "title": "1. 建立或加入聯盟",
+        "description": "開始建立一個新聯盟或加入朋友現有的聯盟。"
+      },
+      "step2": {
+        "title": "2. 選秀您的隊伍",
+        "description": "參加蛇形選秀，建立您的 9 名立法委員名單（6 名先發 + 3 名板凳）。"
+      },
+      "step3": {
+        "title": "3. 管理您的名單",
+        "description": "設定您的先發陣容，進行交易，並在整個賽季中簽下/釋出委員。"
+      },
+      "step4": {
+        "title": "4. 每週競爭",
+        "description": "在對決中與其他隊伍正面交鋒。得分最高的隊伍獲勝！"
+      }
+    },
+    "scoring": {
+      "title": "計分系統",
+      "description": "積分根據真實的立法活動授予",
+      "billProposals": {
+        "title": "法律提案",
+        "points": "每項 6 分",
+        "description": "提出新法案",
+        "cap": "無每週上限"
+      },
+      "billProposalsPassed": {
+        "title": "法律提案（通過）",
+        "points": "每項 12 分",
+        "description": "提出的法案三讀通過",
+        "cap": "6分基礎 + 6分獎勵 = 總共 12 分"
+      },
+      "cosignedBills": {
+        "title": "連署法案（通過）",
+        "points": "每項 3 分",
+        "description": "連署的法案三讀通過",
+        "cap": "僅計算通過的法案"
+      },
+      "floorSpeeches": {
+        "title": "會議發言",
+        "points": "每次 1 分",
+        "description": "在立法會議期間發言（包括院會質詢、發言和委員會發言、質詢）",
+        "cap": "每週上限：5 分"
+      },
+      "writtenInterpellations": {
+        "title": "書面質詢",
+        "points": "每次 1 分",
+        "description": "向政府官員提交書面問題",
+        "cap": "每週上限：5 分"
+      },
+      "rollCallVotes": {
+        "title": "記名投票",
+        "points": "每次 1 分",
+        "description": "參與記錄在案的投票",
+        "cap": "無每週上限"
+      },
+      "maverickBonus": {
+        "title": "違背黨意獎勵",
+        "points": "3-9 分",
+        "description": "在記名投票中違反黨意投票",
+        "details": {
+          "p3": "• 3 分：70%+ 的黨員投相反票",
+          "p6": "• 6 分：80%+ 的黨員投相反票",
+          "p9": "• 9 分：90%+ 的黨員投相反票"
+        }
+      }
+    },
+    "roster": {
+      "title": "名單規則",
+      "size": {
+        "title": "名單規模",
+        "description": "總共 9 名立法委員：6 名先發 + 3 名板凳"
+      },
+      "scoring": {
+        "title": "計分",
+        "description": "只有您的 6 名先發立法委員為您的隊伍賺取積分。板凳委員不計入您的每週得分。"
+      },
+      "leave": {
+        "title": "請假狀態",
+        "description": "請假中的立法委員（標記為 <badge></badge>）在缺席期間不賺取積分。"
+      },
+      "moves": {
+        "title": "名單異動",
+        "description": "您可以隨時簽下自由委員並從名單中釋出委員。當您的名單已滿時，您必須釋出一名委員才能加入新委員。"
+      }
+    },
+    "draft": {
+      "title": "選秀規則",
+      "snake": {
+        "title": "蛇形選秀格式",
+        "description": "選秀順序每輪反轉。例如，有 4 支隊伍：",
+        "example": {
+          "r1": "第 1 輪：隊伍 1, 2, 3, 4",
+          "r2": "第 2 輪：隊伍 4, 3, 2, 1",
+          "r3": "第 3 輪：隊伍 1, 2, 3, 4"
+        }
+      },
+      "queue": {
+        "title": "選秀行列",
+        "description": "在選秀之前，您可以建立立法委員的優先順序列表。在選秀期間，系統將自動從您的行列中選擇排名最高的可用立法委員。"
+      },
+      "auto": {
+        "title": "自動選秀",
+        "description": "如果您的優先順序行列為空，系統將為您隨機選擇一名可用的立法委員。"
+      }
+    },
+    "matchups": {
+      "title": "每週對決",
+      "schedule": {
+        "title": "賽程",
+        "description": "每週從週一到週日。隊伍在正面交鋒的比賽中配對。"
+      },
+      "winning": {
+        "title": "獲勝",
+        "description": "6 名先發委員總分最高的隊伍贏得對決。"
+      },
+      "standings": {
+        "title": "戰績表",
+        "description": "隊伍根據整個賽季的勝、負和總得分進行排名。"
+      }
+    },
+    "strategy": {
+      "title": "策略提示",
+      "average": {
+        "title": "查看平均分數",
+        "description": "查看立法委員的每週平均得分，以識別表現穩定的委員。"
+      },
+      "bench": {
+        "title": "管理您的板凳委員",
+        "description": "將活躍的立法委員留在板凳上，以防先發立法委員請假。"
+      },
+      "activity": {
+        "title": "監控活動",
+        "description": "查看活動動態，了解其他隊伍最近的簽約和釋出。"
+      },
+      "diversify": {
+        "title": "多樣化您的隊伍",
+        "description": "選秀來自不同委員會的立法委員，以最大化得分機會。"
+      }
+    },
+    "goToDashboard": "前往主頁"
+  },
+  "playersPage": {
+    "title": "未簽約立法委員",
+    "subtitle": "可供簽約 • 點擊立法委員查看歷史"
+  },
+  "playersGrid": {
+    "add": "新增",
+    "pickupModal": {
+      "title": "簽下立法委員",
+      "description": "將此立法委員加入您的名單。",
+      "descriptionFull": "您的名單已滿。請選擇一名立法委員釋出。",
+      "adding": "新增中",
+      "lastWeek": "上週",
+      "selectDrop": "選擇要釋出的立法委員：",
+      "cancel": "取消",
+      "confirm": "確認",
+      "processing": "處理中...",
+      "bench": "板凳"
+    }
+  },
+  "matchupsPage": {
+    "title": "對決",
+    "week": "第 {week} 週 / 共 {total} 週",
+    "currentWeek": "本週",
+    "calculateScores": "計算分數",
+    "noMatchups": {
+      "title": "本週尚未安排對決。",
+      "description": "選秀完成後將自動產生對決。"
+    },
+    "bye": "輪空",
+    "byeWeek": "輪空週",
+    "vs": "對",
+    "total": "總計",
+    "scoresCalculated": "分數已計算"
+  },
+  "activityPage": {
+    "title": "聯盟活動",
+    "subtitle": "最近的交易和更新",
+    "recentActivity": "最近活動",
+    "noActivity": "尚無活動"
+  },
+  "common": {
+    "rules": "規則",
+    "dashboard": "主頁",
+    "signOut": "登出",
+    "pleaseSignIn": "請先登入",
+    "leagueNotFound": "找不到聯盟",
+    "commissionerOnly": "只有主席可以存取設定。"
+  },
+  "playerHistoryModal": {
+    "avgPerWeek": "週平均",
+    "weeklySummary": "每週摘要",
+    "allEvents": "所有事件",
+    "noActivity": "尚無計分活動",
+    "weekOf": "{date} 那週",
+    "categoryBreakdown": "類別分解",
+    "activities": "活動",
+    "activity": "活動",
+    "activitiesPlural": "活動"
+  },
+  "leaveIndicator": {
+    "title": "請假中 - 不計分",
+    "leaveDate": "請假日期：",
+    "reason": "原因："
+  },
+  "errorIndicator": {
+    "title": "資料擷取問題",
+    "issue": "問題：",
+    "support": "此立委的計分資料可能不完整。如果問題持續，請聯絡技術支援。"
+  },
+  "legislatorsPage": {
+    "title": "立委數據",
+    "subtitle": "點擊任何立委查看詳細歷史",
+    "backToHome": "← 返回首頁",
+    "photo": "照片",
+    "name": "姓名",
+    "party": "政黨",
+    "region": "選區",
+    "totalPoints": "總分",
+    "weeklyAverage": "週平均",
+    "searchPlaceholder": "搜尋姓名或政黨...",
+    "noResults": "找不到符合搜尋條件的立委",
+    "browseAll": "瀏覽立委"
+  },
+  "legislatorsList": {
+    "photo": "照片",
+    "name": "姓名",
+    "party": "政黨",
+    "region": "選區",
+    "lastWeek": "上週",
+    "average": "平均",
+    "propose": "提案",
+    "cosign": "連署",
+    "floor": "發言",
+    "written": "書面質詢",
+    "vote": "投票",
+    "mav": "違背黨意",
+    "total": "總計",
+    "actions": "動作",
+    "noLegislatorsFound": "找不到立委"
+  },
+  "legislatorDetailPage": {
+    "backToList": "← 返回立委列表",
+    "weeklyAverage": "週平均",
+    "pointsPerWeek": "分/週",
+    "pointsGraph": "分數趨勢圖",
+    "recentWeeks": "近 {weeks} 週",
+    "tabs": {
+      "all": "全部活動",
+      "legislation": "法案",
+      "votes": "投票",
+      "speeches": "發言",
+      "interpellations": "質詢"
+    },
+    "tableHeaders": {
+      "date": "日期",
+      "action": "動作",
+      "points": "分數"
+    },
+    "noActivity": "尚無計分活動記錄",
+    "partyLabel": "政黨",
+    "regionLabel": "選區"
+  },
+  "signInPage": {
+    "title": "登入",
+    "subtitle": "登入您的夢幻立法院帳號",
+    "googleButton": "使用 Google 登入",
+    "orDivider": "或",
+    "emailLabel": "電子郵件",
+    "emailPlaceholder": "your@email.com",
+    "passwordLabel": "密碼",
+    "passwordPlaceholder": "輸入您的密碼",
+    "submitButton": "登入",
+    "signingIn": "登入中..."
+  }
+}

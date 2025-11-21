@@ -197,6 +197,19 @@ export async function getAllLegislators() {
     })
 }
 
+export async function getLegislatorById(id: string) {
+    return prisma.legislator.findUnique({
+        where: { id },
+        include: {
+            scores: {
+                orderBy: {
+                    date: 'desc'
+                }
+            }
+        }
+    })
+}
+
 export async function draftPlayer(leagueId: string, teamId: string, legislatorId: string) {
     const session = await auth()
     if (!session?.user?.id) throw new Error("Not authenticated")
@@ -525,7 +538,11 @@ export async function getLegislatorWeeklyScores(
     return weeklyScores
 }
 
-export async function toggleBenchStatus(teamId: string, legislatorId: string) {
+export async function toggleBenchStatus(
+    teamId: string,
+    legislatorId: string,
+    swapWithLegislatorId?: string
+) {
     const session = await auth()
     if (!session?.user?.id) throw new Error("Not authenticated")
 
@@ -534,34 +551,65 @@ export async function toggleBenchStatus(teamId: string, legislatorId: string) {
     if (!user) throw new Error("User record not found. Please sign out and sign in again.")
 
     const team = await prisma.team.findUnique({
-        where: { id: teamId }
+        where: { id: teamId },
+        include: {
+            legislators: {
+                select: { id: true }
+            }
+        }
     })
 
     if (!team) throw new Error("Team not found")
     if (team.ownerId !== session.user.id) throw new Error("Not authorized")
 
-    const benchIds = new Set(team.benchLegislatorIds ? team.benchLegislatorIds.split(',') : [])
+    const benchIds = new Set(team.benchLegislatorIds ? team.benchLegislatorIds.split(',').filter(Boolean) : [])
     const isBench = benchIds.has(legislatorId)
 
+    const totalCount = team.legislators.length
+    const rosterCount = totalCount - benchIds.size
+    const benchCount = benchIds.size
+
     if (isBench) {
-        // Move to roster
-        // Check if roster is full (max 6)
-        const totalLegislatorsCount = await prisma.legislator.count({
-            where: {
-                teams: {
-                    some: { id: teamId }
+        // Moving FROM bench TO roster
+        if (rosterCount >= 6) {
+            // Roster is full - need to swap
+            if (!swapWithLegislatorId) {
+                // Auto-swap with first roster player
+                const firstRosterPlayer = team.legislators.find(leg => !benchIds.has(leg.id) && leg.id !== legislatorId)
+
+                if (!firstRosterPlayer) {
+                    return { success: false, message: "Unable to swap - roster configuration error." }
+                }
+                swapWithLegislatorId = firstRosterPlayer.id
+            }
+
+            // Perform swap: remove legislatorId from bench, add swapWith to bench
+            benchIds.delete(legislatorId)
+            benchIds.add(swapWithLegislatorId)
+        } else {
+            // Roster has space - simple move
+            benchIds.delete(legislatorId)
+        }
+    } else {
+        // Moving FROM roster TO bench
+        if (benchCount >= 3) {
+            // Bench is full - need to swap
+            if (!swapWithLegislatorId) {
+                // Need user to select which bench player to swap with
+                return {
+                    success: false,
+                    needsSwapSelection: true,
+                    message: "Bench is full. Please select a bench player to swap with."
                 }
             }
-        })
 
-        if (totalLegislatorsCount - benchIds.size >= 6) {
-            return { success: false, message: "Roster is full (max 6). Move a player to bench first." }
+            // Perform swap: remove swapWith from bench, add legislatorId to bench
+            benchIds.delete(swapWithLegislatorId)
+            benchIds.add(legislatorId)
+        } else {
+            // Bench has space - simple move
+            benchIds.add(legislatorId)
         }
-
-        benchIds.delete(legislatorId)
-    } else {
-        // Move to bench
-        benchIds.add(legislatorId)
     }
 
     await prisma.team.update({

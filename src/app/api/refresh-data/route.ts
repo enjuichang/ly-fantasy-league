@@ -1,0 +1,59 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { PrismaClient } from '@prisma/client'
+import { syncRollcallScores, syncProposeScores } from '@/lib/fetchers'
+
+// Initialize Prisma Client
+// In production, this should be a singleton to avoid connection limits
+// But Next.js App Router handles this reasonably well in route handlers
+const prisma = new PrismaClient()
+
+export const maxDuration = 60 // Set max duration to 60 seconds (Vercel Hobby limit)
+export const dynamic = 'force-dynamic'
+
+export async function GET(request: NextRequest) {
+    try {
+        // Check for authorization
+        const authHeader = request.headers.get('authorization')
+        if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+            return new NextResponse('Unauthorized', { status: 401 })
+        }
+
+        const { searchParams } = new URL(request.url)
+        const type = searchParams.get('type') // 'rollcall', 'propose', or 'all' (default)
+
+        const results: any = {}
+
+        // Sync Rollcall Scores
+        if (!type || type === 'all' || type === 'rollcall') {
+            // Limit to 20 recent votes to avoid timeout during scheduled runs
+            // Unless explicitly asked for full sync via query param ?full=true
+            const limit = searchParams.get('full') === 'true' ? undefined : 20
+            results.rollcall = await syncRollcallScores(prisma, limit)
+        }
+
+        // Sync Propose Scores
+        if (!type || type === 'all' || type === 'propose') {
+            // Propose sync is heavier as it iterates legislators
+            // We might want to limit this or split it?
+            // For now, let's run it but be aware of timeouts
+            results.propose = await syncProposeScores(prisma)
+        }
+
+        return NextResponse.json({
+            success: true,
+            timestamp: new Date().toISOString(),
+            results
+        })
+    } catch (error) {
+        console.error('Data refresh failed:', error)
+        return NextResponse.json(
+            {
+                success: false,
+                error: error instanceof Error ? error.message : 'Unknown error'
+            },
+            { status: 500 }
+        )
+    } finally {
+        await prisma.$disconnect()
+    }
+}
