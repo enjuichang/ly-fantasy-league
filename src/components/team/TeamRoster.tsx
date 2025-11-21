@@ -15,7 +15,7 @@ interface Score {
     id: string
     date: Date
     points: number
-    reason: string
+    description: string
     category: string
 }
 
@@ -287,8 +287,8 @@ export default function TeamRoster({
                                 <div
                                     key={leg.id}
                                     className={`flex items-center gap-3 p-3 border rounded-lg cursor-pointer transition-colors ${selectedSwapTarget === leg.id
-                                            ? 'border-primary bg-primary/5'
-                                            : 'hover:bg-accent'
+                                        ? 'border-primary bg-primary/5'
+                                        : 'hover:bg-accent'
                                         }`}
                                     onClick={() => setSelectedSwapTarget(leg.id)}
                                 >

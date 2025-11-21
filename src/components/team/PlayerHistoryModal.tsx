@@ -9,7 +9,7 @@ interface Score {
     id: string
     date: Date
     points: number
-    reason: string
+    description: string
     category: string
 }
 
@@ -168,8 +168,8 @@ export default function PlayerHistoryModal({ legislator, isOpen, onClose }: Play
                     <button
                         onClick={() => setViewMode('weekly')}
                         className={`px-4 py-2 font-medium transition-colors ${viewMode === 'weekly'
-                                ? 'border-b-2 border-blue-600 text-blue-600'
-                                : 'text-muted-foreground hover:text-foreground'
+                            ? 'border-b-2 border-blue-600 text-blue-600'
+                            : 'text-muted-foreground hover:text-foreground'
                             }`}
                     >
                         Weekly Summary
@@ -177,8 +177,8 @@ export default function PlayerHistoryModal({ legislator, isOpen, onClose }: Play
                     <button
                         onClick={() => setViewMode('all')}
                         className={`px-4 py-2 font-medium transition-colors ${viewMode === 'all'
-                                ? 'border-b-2 border-blue-600 text-blue-600'
-                                : 'text-muted-foreground hover:text-foreground'
+                            ? 'border-b-2 border-blue-600 text-blue-600'
+                            : 'text-muted-foreground hover:text-foreground'
                             }`}
                     >
                         All Events

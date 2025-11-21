@@ -154,7 +154,7 @@ async function generateWeeklyScores(
         legislatorId,
         date: weekStart,
         points,
-        reason: activity.description(count),
+        description: activity.description(count),
         category: activity.category
       }
     })
