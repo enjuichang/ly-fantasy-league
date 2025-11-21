@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { syncRollcallScores, syncProposeScores } from '@/lib/fetchers'
+import { syncRollcallScores, syncProposeScores, syncCosignScores, syncWrittenInterpellationScores, syncFloorSpeechScores } from '@/lib/fetchers'
 
 // Initialize Prisma Client
 // In production, this should be a singleton to avoid connection limits
@@ -40,6 +40,27 @@ export async function GET(request: NextRequest) {
             // Propose sync is heavier as it iterates legislators
             // We use pagination to avoid timeouts
             results.propose = await syncProposeScores(prisma, undefined, limit, offset)
+        }
+
+        // Sync Cosign Scores
+        if (!type || type === 'all' || type === 'cosign') {
+            const limit = searchParams.get('limit') ? parseInt(searchParams.get('limit')!) : undefined
+            const offset = searchParams.get('offset') ? parseInt(searchParams.get('offset')!) : undefined
+            results.cosign = await syncCosignScores(prisma, undefined, limit, offset)
+        }
+
+        // Sync Written Interpellation Scores
+        if (!type || type === 'all' || type === 'written_interpellation') {
+            const limit = searchParams.get('limit') ? parseInt(searchParams.get('limit')!) : undefined
+            const offset = searchParams.get('offset') ? parseInt(searchParams.get('offset')!) : undefined
+            results.written_interpellation = await syncWrittenInterpellationScores(prisma, undefined, limit, offset)
+        }
+
+        // Sync Floor Speech Scores
+        if (!type || type === 'all' || type === 'floor_speech') {
+            const limit = searchParams.get('limit') ? parseInt(searchParams.get('limit')!) : undefined
+            const offset = searchParams.get('offset') ? parseInt(searchParams.get('offset')!) : undefined
+            results.floor_speech = await syncFloorSpeechScores(prisma, undefined, limit, offset)
         }
 
         return NextResponse.json({

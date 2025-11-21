@@ -1,2 +1,5 @@
 export * from './rollcall'
 export * from './propose'
+export * from './cosign'
+export * from './written-interpellation'
+export * from './floor-speech'

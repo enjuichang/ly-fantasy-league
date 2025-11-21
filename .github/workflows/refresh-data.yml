@@ -39,3 +39,57 @@ jobs:
           curl -X GET "${{ secrets.APP_URL }}/api/refresh-data?type=propose&limit=30&offset=90" \
           -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
           --fail
+
+      - name: Sync Cosign Bills (Batch 1/4)
+        run: |
+          curl -X GET "${{ secrets.APP_URL }}/api/refresh-data?type=cosign&limit=30&offset=0" \
+          -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+          --fail
+
+      - name: Sync Cosign Bills (Batch 2/4)
+        run: |
+          curl -X GET "${{ secrets.APP_URL }}/api/refresh-data?type=cosign&limit=30&offset=30" \
+          -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+          --fail
+
+      - name: Sync Cosign Bills (Batch 3/4)
+        run: |
+          curl -X GET "${{ secrets.APP_URL }}/api/refresh-data?type=cosign&limit=30&offset=60" \
+          -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+          --fail
+
+      - name: Sync Cosign Bills (Batch 4/4)
+        run: |
+          curl -X GET "${{ secrets.APP_URL }}/api/refresh-data?type=cosign&limit=30&offset=90" \
+          -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+          --fail
+
+      - name: Sync Written Interpellations (Batch 1/4)
+        run: |
+          curl -X GET "${{ secrets.APP_URL }}/api/refresh-data?type=written_interpellation&limit=30&offset=0" \
+          -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+          --fail
+
+      - name: Sync Written Interpellations (Batch 2/4)
+        run: |
+          curl -X GET "${{ secrets.APP_URL }}/api/refresh-data?type=written_interpellation&limit=30&offset=30" \
+          -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+          --fail
+
+      - name: Sync Written Interpellations (Batch 3/4)
+        run: |
+          curl -X GET "${{ secrets.APP_URL }}/api/refresh-data?type=written_interpellation&limit=30&offset=60" \
+          -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+          --fail
+
+      - name: Sync Written Interpellations (Batch 4/4)
+        run: |
+          curl -X GET "${{ secrets.APP_URL }}/api/refresh-data?type=written_interpellation&limit=30&offset=90" \
+          -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+          --fail
+
+      - name: Sync Floor Speeches
+        run: |
+          curl -X GET "${{ secrets.APP_URL }}/api/refresh-data?type=floor_speech" \
+          -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+          --fail
