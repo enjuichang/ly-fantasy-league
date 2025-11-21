@@ -380,7 +380,7 @@ async function processVote(
     }
 }
 
-export async function syncRollcallScores(prisma: PrismaClient, limit?: number) {
+export async function syncRollcallScores(prisma: PrismaClient, limit?: number, offset?: number) {
     console.log('🚀 Starting ROLLCALL_VOTE and MAVERICK_BONUS score fetching...\n')
 
     // Fetch all rollcall votes
@@ -392,17 +392,17 @@ export async function syncRollcallScores(prisma: PrismaClient, limit?: number) {
         throw error
     }
 
-    // Sort votes by date descending to process newest first (optimization for cron)
-    // Actually, the API usually returns newest first, but let's be sure
-    // But wait, if we process newest first, we might want to stop if we find existing records?
-    // For now, let's just process everything or limit it.
+    // Apply offset and limit for batching
+    const startIndex = offset || 0
+    const endIndex = limit ? startIndex + limit : votes.length
+    votes = votes.slice(startIndex, endIndex)
 
-    if (limit) {
-        votes = votes.slice(0, limit)
-        console.log(`\n⚠️  Limited to first ${limit} votes\n`)
+    if (offset || limit) {
+        console.log(`\n⚠️  Processing votes ${startIndex}-${Math.min(endIndex, votes.length + startIndex) - 1} (limit: ${limit}, offset: ${offset})\n`)
     }
 
     console.log(`📊 Processing ${votes.length} rollcall vote(s)\n`)
+
 
     let processedCount = 0
     let totalRollcallScores = 0

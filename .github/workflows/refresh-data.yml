@@ -10,9 +10,27 @@ jobs:
   refresh:
     runs-on: ubuntu-latest
     steps:
-      - name: Sync Rollcall Votes
+      - name: Sync Rollcall Votes (Batch 1/4 - 5 votes)
         run: |
-          curl -X GET "${{ secrets.APP_URL }}/api/refresh-data?type=rollcall" \
+          curl -X GET "${{ secrets.APP_URL }}/api/refresh-data?type=rollcall&rollcall_limit=5&rollcall_offset=0" \
+          -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+          --fail
+
+      - name: Sync Rollcall Votes (Batch 2/4 - 5 votes)
+        run: |
+          curl -X GET "${{ secrets.APP_URL }}/api/refresh-data?type=rollcall&rollcall_limit=5&rollcall_offset=5" \
+          -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+          --fail
+
+      - name: Sync Rollcall Votes (Batch 3/4 - 5 votes)
+        run: |
+          curl -X GET "${{ secrets.APP_URL }}/api/refresh-data?type=rollcall&rollcall_limit=5&rollcall_offset=10" \
+          -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+          --fail
+
+      - name: Sync Rollcall Votes (Batch 4/4 - 5 votes)
+        run: |
+          curl -X GET "${{ secrets.APP_URL }}/api/refresh-data?type=rollcall&rollcall_limit=5&rollcall_offset=15" \
           -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
           --fail
 

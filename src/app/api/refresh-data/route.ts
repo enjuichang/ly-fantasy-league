@@ -25,10 +25,10 @@ export async function GET(request: NextRequest) {
 
         // Sync Rollcall Scores
         if (!type || type === 'all' || type === 'rollcall') {
-            // Limit to 20 recent votes to avoid timeout during scheduled runs
-            // Unless explicitly asked for full sync via query param ?full=true
-            const limit = searchParams.get('full') === 'true' ? undefined : 20
-            results.rollcall = await syncRollcallScores(prisma, limit)
+            // Support batching via rollcall_limit and rollcall_offset query params
+            const rollcallLimit = searchParams.get('rollcall_limit') ? parseInt(searchParams.get('rollcall_limit')!) : 20
+            const rollcallOffset = searchParams.get('rollcall_offset') ? parseInt(searchParams.get('rollcall_offset')!) : 0
+            results.rollcall = await syncRollcallScores(prisma, rollcallLimit, rollcallOffset)
         }
 
         // Sync Propose Scores
