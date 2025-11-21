@@ -16,7 +16,7 @@ interface Legislator {
         id: string
         date: Date
         points: number
-        reason: string
+        description: string
         category: string
     }>
 }

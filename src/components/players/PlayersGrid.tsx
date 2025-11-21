@@ -27,6 +27,7 @@ interface Player {
     nameEn: string | null
     party: string
     region: string | null
+    areaName: string | null
     picUrl: string | null
     leaveFlag: string | null
     leaveDate: string | null

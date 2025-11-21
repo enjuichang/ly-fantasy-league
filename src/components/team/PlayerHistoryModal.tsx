@@ -259,7 +259,7 @@ export default function PlayerHistoryModal({ legislator, isOpen, onClose }: Play
                                                             .map((score) => (
                                                                 <div key={score.id} className="flex items-center justify-between bg-card p-2 rounded text-sm border">
                                                                     <div className="flex-1">
-                                                                        <p className="text-sm">{score.reason}</p>
+                                                                        <p className="text-sm">{score.description}</p>
                                                                         <p className="text-xs text-muted-foreground">
                                                                             {formatDate(score.date)}
                                                                         </p>
@@ -285,7 +285,7 @@ export default function PlayerHistoryModal({ legislator, isOpen, onClose }: Play
                                 .map((score) => (
                                     <div key={score.id} className="flex items-start justify-between p-3 border rounded-md hover:bg-accent">
                                         <div className="flex-1">
-                                            <p className="font-medium">{score.reason}</p>
+                                            <p className="font-medium">{score.description}</p>
                                             <div className="flex items-center gap-2 mt-1">
                                                 <Badge variant="outline" className="text-xs">
                                                     {score.category}

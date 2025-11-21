@@ -47,7 +47,7 @@ interface Legislator {
         id: string
         date: Date
         points: number
-        reason: string
+        description: string
         category: string
     }>
 }
@@ -237,6 +237,7 @@ export default function DraftQueue({ leagueId, initialPreferences, allLegislator
                             leaveDate: leg.leaveDate || null,
                             leaveReason: leg.leaveReason || null,
                             picUrl: leg.picUrl || null,
+                            areaName: leg.region || null,
                             lastWeekScores: leg.lastWeekScores || { PROPOSE_BILL: 0, COSIGN_BILL: 0, FLOOR_SPEECH: 0, WRITTEN_SPEECH: 0, ROLLCALL_VOTE: 0, MAVERICK_BONUS: 0, total: 0 },
                             averageScores: leg.averageScores || { PROPOSE_BILL: 0, COSIGN_BILL: 0, FLOOR_SPEECH: 0, WRITTEN_SPEECH: 0, ROLLCALL_VOTE: 0, MAVERICK_BONUS: 0, total: 0 }
                         }))}
