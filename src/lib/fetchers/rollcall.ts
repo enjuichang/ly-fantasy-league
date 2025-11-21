@@ -1,449 +1,352 @@
 import { PrismaClient } from '@prisma/client'
 import * as XLSX from 'xlsx'
 
-// We need to pass the prisma client instance or create a new one if not provided
-// But for Next.js API routes, we should use a singleton pattern for PrismaClient
-// For now, we'll accept it as an argument to avoid multiple instances issues in the script vs app
+/* ============================================================
+    TYPES
+============================================================ */
 
 interface VoteRecord {
-    voteDate: string      // ROC format: "113/04/09"
+    voteDate: string
     term: string
     voteIssue: string
-    voteType: string      // Filter for "記名"
+    voteType: string
     sessionPeriod: string
-    url: string          // XLS file URL
+    url: string
     voteTime: string
 }
 
-interface TaiwanAPIResponse {
-    jsonList: VoteRecord[]
-}
+type VoteType = '贊成' | '反對' | '棄權'
 
-interface VotingData {
+interface ParsedVote {
     legislatorName: string
-    vote: '贊成' | '反對' | '棄權'
+    vote: VoteType
 }
 
-interface PartyVoteStats {
+interface Legislator {
+    id: string
+    nameCh: string
     party: string
-    forCount: number
-    againstCount: number
-    abstainCount: number
-    total: number
-    forPercentage: number
-    againstPercentage: number
 }
 
-// Get the start of the week (Monday) for a given date
+interface ProcessedScoreResult {
+    rollcall: number
+    maverick: number
+    errors: string[]
+}
+
+/* ============================================================
+    UTILITIES
+============================================================ */
+
 function getWeekStart(date: Date): Date {
     const d = new Date(date)
     const day = d.getDay()
-    const diff = d.getDate() - day + (day === 0 ? -6 : 1) // Adjust when day is Sunday
+    const diff = d.getDate() - day + (day === 0 ? -6 : 1)
     d.setDate(diff)
     d.setHours(0, 0, 0, 0)
     return d
 }
 
-// Convert ROC date to Gregorian date
-function convertROCtoGregorian(rocDate: string): Date {
-    // Format: "113/04/09" -> 2024-04-09
-    const [rocYear, month, day] = rocDate.split('/')
-    const gregorianYear = parseInt(rocYear) + 1911
-    return new Date(`${gregorianYear}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`)
+function convertROC(roc: string) {
+    const [y, m, d] = roc.split('/')
+    return new Date(+y + 1911, +m - 1, +d)
 }
 
-// Helper function for fetch with retry
-async function fetchWithRetry(url: string, options: RequestInit = {}, retries = 3, backoff = 1000): Promise<Response> {
+function sleep(ms: number) {
+    return new Promise(r => setTimeout(r, ms))
+}
+
+/* ============================================================
+    FETCH ROLLCALLS
+============================================================ */
+
+async function fetchWithRetry(url: string, retries = 3): Promise<Response> {
     try {
-        const response = await fetch(url, options)
-        if (!response.ok) {
-            // If 404 or other client errors, don't retry unless it's a rate limit
-            if (response.status >= 400 && response.status < 500 && response.status !== 429) {
-                return response
+        const res = await fetch(url)
+        if (!res.ok) throw new Error(`Status ${res.status}`)
+        return res
+    } catch (err) {
+        if (retries <= 0) throw err
+        await sleep(500)
+        return fetchWithRetry(url, retries - 1)
+    }
+}
+
+async function fetchRollcalls(): Promise<VoteRecord[]> {
+    const url = `https://data.ly.gov.tw/odw/openDatasetJson.action?id=370&selectTerm=11`
+
+    let attempts = 0
+    const maxAttempts = 5
+    const delay = (ms: number) => new Promise(r => setTimeout(r, ms))
+
+    while (attempts < maxAttempts) {
+        try {
+            const res = await fetchWithRetry(url, 3) // this itself retries internally
+            const data = await res.json()
+            return data.jsonList.filter((v: VoteRecord) => v.voteType === "記名")
+        } catch (err) {
+            attempts++
+            console.warn(`⚠️ fetchRollcalls failed (attempt ${attempts}/${maxAttempts}):`, err)
+
+            if (attempts === maxAttempts) throw err
+
+            await delay(1000 * attempts) // exponential backoff
+        }
+    }
+
+    throw new Error("Unreachable")
+}
+
+
+/* ============================================================
+    XLS PARSER — Modernized based on LY xls structure
+============================================================ */
+
+// Remove all leading numbers, full-width digits, unicode spaces, BOM, etc.
+function normalizeName(raw: string): string {
+    return raw
+        .replace(/^[\d０-９]+/, "")                 // remove leading digits (both 0-9 and ０-９)
+        .replace(/[\s\u3000\u200B\uFEFF]+/g, "")    // remove all space variants
+        .trim()
+}
+
+async function parseXLS(url: string): Promise<ParsedVote[]> {
+    const res = await fetch(url, { headers: { 'User-Agent': 'Mozilla/5.0' } })
+    if (!res.ok) throw new Error(`Failed XLS: ${res.status}`)
+
+    const buf = await res.arrayBuffer()
+    const workbook = XLSX.read(buf, { type: 'array' })
+    const sheet = workbook.Sheets[workbook.SheetNames[0]]
+    const rows = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '' }) as any[][]
+
+    const votes: ParsedVote[] = []
+    let current: VoteType | null = null
+
+    for (const row of rows) {
+        const cells = row.map((c: any) => String(c).trim())
+
+        if (cells.includes("贊成:")) { current = "贊成"; continue }
+        if (cells.includes("反對:")) { current = "反對"; continue }
+        if (cells.includes("棄權:")) { current = "棄權"; continue }
+
+        if (!current) continue
+        if (cells.includes("無")) continue
+
+        // Case B: "025伍麗華"
+        for (const cell of cells) {
+            const m = cell.match(/^([\d０-９]{1,3})(.+)$/)  // full-width digit support
+            if (m) {
+                const name = normalizeName(m[2])
+                if (name) votes.push({ legislatorName: name, vote: current })
             }
-            throw new Error(`Status ${response.status}`)
-        }
-        return response
-    } catch (error) {
-        if (retries <= 0) {
-            throw error
-        }
-        console.log(`    ⚠️  Fetch failed, retrying in ${backoff}ms... (${retries} retries left)`)
-        await new Promise(resolve => setTimeout(resolve, backoff))
-        return fetchWithRetry(url, options, retries - 1, backoff * 2)
-    }
-}
-
-// Fetch all rollcall votes from API
-async function fetchRollcallVotes(): Promise<VoteRecord[]> {
-    const apiUrl = 'https://data.ly.gov.tw/odw/openDatasetJson.action?id=370&selectTerm=11'
-
-    console.log('  Fetching voting records from API...')
-
-    try {
-        const response = await fetchWithRetry(apiUrl)
-
-        if (!response.ok) {
-            throw new Error(`Taiwan API returned status ${response.status}`)
         }
 
-        const data: TaiwanAPIResponse = await response.json()
-
-        // Filter for rollcall votes only (voteType === '記名')
-        const rollcallVotes = data.jsonList.filter(vote => vote.voteType === '記名')
-
-        console.log(`  ✓ Found ${rollcallVotes.length} rollcall votes`)
-        return rollcallVotes
-    } catch (error) {
-        console.error('  ❌ Failed to fetch rollcall votes:', error)
-        throw error
-    }
-}
-
-// Parse XLS file to extract voting data
-async function parseVoteXLS(url: string): Promise<VotingData[]> {
-    console.log('    Downloading XLS file...')
-
-    // Download with redirects and user agent
-    const response = await fetchWithRetry(url, {
-        redirect: 'follow',
-        headers: {
-            'User-Agent': 'Mozilla/5.0'
-        }
-    })
-
-    if (!response.ok) {
-        throw new Error(`Failed to download XLS: ${response.status}`)
-    }
-
-    const arrayBuffer = await response.arrayBuffer()
-    const workbook = XLSX.read(arrayBuffer, { type: 'array' })
-    const firstSheet = workbook.Sheets[workbook.SheetNames[0]]
-    const data = XLSX.utils.sheet_to_json(firstSheet, { header: 1, defval: '' }) as any[][]
-
-    const votingData: VotingData[] = []
-    let currentVote: '贊成' | '反對' | '棄權' | null = null
-
-    // Parse rows to find voting sections
-    for (const row of data) {
-        // Check for section headers
-        const firstCell = String(row[1] || '').trim()
-
-        if (firstCell === '贊成:') {
-            currentVote = '贊成'
-            continue
-        } else if (firstCell === '反對:') {
-            currentVote = '反對'
-            continue
-        } else if (firstCell === '棄權:') {
-            currentVote = '棄權'
-            continue
-        }
-
-        // Skip if we're not in a voting section
-        if (!currentVote) continue
-
-        // Extract names from row (format: "NNN  Name")
-        for (const cell of row) {
-            const cellStr = String(cell).trim()
-
-            // Match pattern: number + spaces + name
-            const match = cellStr.match(/^\d+\s+(.+)$/)
-            if (match) {
-                const name = match[1].trim()
-                // Remove extra spaces (some names have full-width spaces)
-                const cleanName = name.replace(/\s+/g, '')
-
-                if (cleanName) {
-                    votingData.push({
-                        legislatorName: cleanName,
-                        vote: currentVote
-                    })
-                }
+        // Case A: ["025", "伍麗華"]
+        for (let i = 0; i < cells.length - 1; i++) {
+            if (/^[\d０-９]+$/.test(cells[i]) && cells[i + 1]) {
+                const name = normalizeName(cells[i + 1])
+                if (name) votes.push({ legislatorName: name, vote: current })
             }
         }
     }
 
-    return votingData
+    return votes
 }
 
-// Match legislator name to database
-async function matchLegislator(prisma: PrismaClient, name: string): Promise<{ id: string, party: string, nameCh: string } | null> {
-    // Try exact match first
-    let legislator = await prisma.legislator.findFirst({
-        where: { nameCh: name },
-        select: { id: true, party: true, nameCh: true }
-    })
+/* ============================================================
+    LEGISLATOR MATCHING (cached)
+============================================================ */
 
-    if (legislator) return legislator
+let LEGISLATOR_CACHE: Legislator[] | null = null
 
-    // Try fuzzy matching - remove spaces, match partial name
-    const cleanedName = name.replace(/\s+/g, '')
-
-    // Try contains match
-    legislator = await prisma.legislator.findFirst({
-        where: { nameCh: { contains: cleanedName } },
-        select: { id: true, party: true, nameCh: true }
-    })
-
-    if (legislator) return legislator
-
-    // Try reverse - check if database name is contained in input name
-    const allLegislators = await prisma.legislator.findMany({
-        select: { id: true, party: true, nameCh: true }
-    })
-
-    for (const leg of allLegislators) {
-        const dbNameClean = leg.nameCh.replace(/\s+/g, '')
-        if (cleanedName.includes(dbNameClean) || dbNameClean.includes(cleanedName)) {
-            return leg
-        }
+async function loadLegislators(prisma: PrismaClient): Promise<Legislator[]> {
+    if (!LEGISLATOR_CACHE) {
+        LEGISLATOR_CACHE = await prisma.legislator.findMany({
+            select: { id: true, nameCh: true, party: true }
+        })
     }
+    return LEGISLATOR_CACHE
+}
+
+function matchLegislator(all: Legislator[], name: string): Legislator | null {
+    const cleaned = name.replace(/\s+/g, '')
+
+    // 1. Exact match
+    let m = all.find(l => l.nameCh === cleaned)
+    if (m) return m
+
+    // 2. DB name starts with XLS name (for Indigenous names)
+    m = all.find(l => l.nameCh.startsWith(cleaned))
+    if (m) return m
+
+    // 3. Contains match (fallback)
+    m = all.find(l => l.nameCh.includes(cleaned) || cleaned.includes(l.nameCh))
+    if (m) return m
 
     return null
 }
 
-// Calculate party voting statistics
-function calculatePartyStats(
-    votingData: VotingData[],
-    legislators: Map<string, { id: string, party: string, nameCh: string }>
-): Map<string, PartyVoteStats> {
-    const partyStats = new Map<string, PartyVoteStats>()
 
-    for (const [name, vote] of votingData.map(v => [v.legislatorName, v.vote] as const)) {
-        const legislator = legislators.get(name)
-        if (!legislator) continue
+/* ============================================================
+    PARTY STATISTICS
+============================================================ */
 
-        const party = legislator.party
+function computePartyStats(votes: ParsedVote[], legs: Map<string, Legislator>) {
+    const stats = new Map<string, any>()
 
-        if (!partyStats.has(party)) {
-            partyStats.set(party, {
-                party,
-                forCount: 0,
-                againstCount: 0,
-                abstainCount: 0,
-                total: 0,
-                forPercentage: 0,
-                againstPercentage: 0
-            })
+    for (const v of votes) {
+        const leg = legs.get(v.legislatorName)
+        if (!leg) continue
+
+        if (!stats.has(leg.party)) {
+            stats.set(leg.party, { for: 0, against: 0, abstain: 0, total: 0 })
         }
 
-        const stats = partyStats.get(party)!
-        stats.total++
-
-        if (vote === '贊成') stats.forCount++
-        else if (vote === '反對') stats.againstCount++
-        else if (vote === '棄權') stats.abstainCount++
+        const p = stats.get(leg.party)
+        p.total++
+        if (v.vote === '贊成') p.for++
+        if (v.vote === '反對') p.against++
+        if (v.vote === '棄權') p.abstain++
     }
 
-    // Calculate percentages
-    for (const stats of partyStats.values()) {
-        if (stats.total > 0) {
-            stats.forPercentage = (stats.forCount / stats.total) * 100
-            stats.againstPercentage = (stats.againstCount / stats.total) * 100
-        }
+    for (const p of stats.values()) {
+        p.pctFor = (p.for / p.total) * 100
+        p.pctAgainst = (p.against / p.total) * 100
     }
 
-    return partyStats
+    return stats
 }
 
-// Calculate maverick bonus for a legislator
-function calculateMaverickBonus(
-    legislatorVote: '贊成' | '反對' | '棄權',
-    legislatorParty: string,
-    partyStats: Map<string, PartyVoteStats>
-): number {
-    // No maverick bonus for abstentions
-    if (legislatorVote === '棄權') return 0
+function maverickBonus(vote: VoteType, party: string, stats: Map<string, any>) {
+    if (vote === '棄權') return 0
 
-    const stats = partyStats.get(legislatorParty)
-    if (!stats || stats.total === 0) return 0
+    const p = stats.get(party)
+    if (!p) return 0
 
-    // Determine party majority position
-    const partyMajorityFor = stats.forPercentage > 50
-    const legislatorVotedFor = legislatorVote === '贊成'
+    const majorityFor = p.pctFor > 50
+    const votedFor = vote === '贊成'
 
-    // Check if legislator voted opposite of party majority
-    if (partyMajorityFor !== legislatorVotedFor) {
-        // Calculate the percentage of party members that voted the opposite way
-        const oppositionPercentage = partyMajorityFor
-            ? stats.forPercentage
-            : stats.againstPercentage
-
-        // Award points based on how strong the party majority was
-        // Higher opposition percentage = more independent thinking
-        if (oppositionPercentage >= 90) return 9  // 90%+ of party voted opposite
-        if (oppositionPercentage >= 80) return 6  // 80%+ of party voted opposite
-        if (oppositionPercentage >= 70) return 3  // 70%+ of party voted opposite
+    if (majorityFor !== votedFor) {
+        const pct = majorityFor ? p.pctFor : p.pctAgainst
+        if (pct >= 90) return 9
+        if (pct >= 80) return 6
+        if (pct >= 70) return 3
     }
 
     return 0
 }
 
-// Process a single vote record
-async function processVote(
+/* ============================================================
+    SCORE PROCESSING
+============================================================ */
+
+async function scoreVotes(
     prisma: PrismaClient,
-    voteRecord: VoteRecord,
-    votingData: VotingData[]
-): Promise<{ rollcallScores: number, maverickScores: number, errors: string[] }> {
-    const voteDate = convertROCtoGregorian(voteRecord.voteDate)
-    const weekStart = getWeekStart(voteDate)
+    record: VoteRecord,
+    parsed: ParsedVote[]
+): Promise<ProcessedScoreResult> {
+
     const errors: string[] = []
+    const week = getWeekStart(convertROC(record.voteDate))
 
-    // Match all legislators and build lookup map
-    const legislators = new Map<string, { id: string, party: string, nameCh: string }>()
+    const allLegs = await loadLegislators(prisma)
+    const matched = new Map<string, Legislator>()
 
-    for (const vote of votingData) {
-        const match = await matchLegislator(prisma, vote.legislatorName)
-        if (match) {
-            legislators.set(vote.legislatorName, match)
-        } else {
-            const unicodeName = vote.legislatorName.split('').map(c => '\\u' + c.charCodeAt(0).toString(16).padStart(4, '0')).join('')
-            errors.push(`Could not match legislator: ${vote.legislatorName} (Unicode: ${unicodeName})`)
-        }
+    for (const v of parsed) {
+        const m = matchLegislator(allLegs, v.legislatorName)
+        if (m) matched.set(v.legislatorName, m)
+        else errors.push(`Unmatched legislator: ${v.legislatorName}`)
     }
 
-    // Calculate party statistics for maverick detection
-    const partyStats = calculatePartyStats(votingData, legislators)
+    const stats = computePartyStats(parsed, matched)
 
-    let rollcallScoresCreated = 0
-    let maverickScoresCreated = 0
+    const rollRows: any[] = []
+    const mavRows: any[] = []
 
-    // Create scores for each legislator
-    for (const vote of votingData) {
-        const legislator = legislators.get(vote.legislatorName)
-        if (!legislator) continue
+    for (const v of parsed) {
+        const leg = matched.get(v.legislatorName)
+        if (!leg) continue
 
-        // Create ROLLCALL_VOTE score (1 point for participation)
-        const voteDescription = `Rollcall vote: ${voteRecord.voteIssue.substring(0, 80)} (voted: ${vote.vote})`
-
-        const existingVote = await prisma.score.findFirst({
-            where: {
-                legislatorId: legislator.id,
-                date: weekStart,
-                category: 'ROLLCALL_VOTE',
-                description: { contains: voteRecord.voteIssue.substring(0, 20) }
-            }
+        rollRows.push({
+            legislatorId: leg.id,
+            date: week,
+            points: 1,
+            category: 'ROLLCALL_VOTE',
+            description: `Rollcall vote on ${record.voteIssue}`
         })
 
-        if (!existingVote) {
-            await prisma.score.create({
-                data: {
-                    legislatorId: legislator.id,
-                    date: weekStart,
-                    points: 1,
-                    description: voteDescription,
-                    category: 'ROLLCALL_VOTE'
-                }
+        const bonus = maverickBonus(v.vote, leg.party, stats)
+        if (bonus > 0) {
+            mavRows.push({
+                legislatorId: leg.id,
+                date: week,
+                points: bonus,
+                category: 'MAVERICK_BONUS',
+                description: `Voted independently (${v.vote}) on ${record.voteIssue}`
             })
-            rollcallScoresCreated++
-        }
-
-        // Calculate and create MAVERICK_BONUS if applicable
-        const maverickPoints = calculateMaverickBonus(
-            vote.vote,
-            legislator.party,
-            partyStats
-        )
-
-        if (maverickPoints > 0) {
-            const maverickDescription = `Voted independently (${vote.vote}) on: ${voteRecord.voteIssue.substring(0, 80)}`
-
-            const existingMaverick = await prisma.score.findFirst({
-                where: {
-                    legislatorId: legislator.id,
-                    date: weekStart,
-                    category: 'MAVERICK_BONUS',
-                    description: { contains: voteRecord.voteIssue.substring(0, 50) }
-                }
-            })
-
-            if (!existingMaverick) {
-                await prisma.score.create({
-                    data: {
-                        legislatorId: legislator.id,
-                        date: weekStart,
-                        points: maverickPoints,
-                        description: maverickDescription,
-                        category: 'MAVERICK_BONUS'
-                    }
-                })
-                maverickScoresCreated++
-            }
         }
     }
 
+    if (rollRows.length)
+        await prisma.score.createMany({ data: rollRows, skipDuplicates: true })
+
+    if (mavRows.length)
+        await prisma.score.createMany({ data: mavRows, skipDuplicates: true })
+
     return {
-        rollcallScores: rollcallScoresCreated,
-        maverickScores: maverickScoresCreated,
+        rollcall: rollRows.length,
+        maverick: mavRows.length,
         errors
     }
 }
 
-export async function syncRollcallScores(prisma: PrismaClient, limit?: number, offset?: number) {
-    console.log('🚀 Starting ROLLCALL_VOTE and MAVERICK_BONUS score fetching...\n')
+/* ============================================================
+    MASTER SYNC FUNCTION
+============================================================ */
 
-    // Fetch all rollcall votes
-    let votes: VoteRecord[] = []
-    try {
-        votes = await fetchRollcallVotes()
-    } catch (error) {
-        console.error('❌ Critical error fetching votes list. Aborting.')
-        throw error
-    }
+export async function syncRollcallScores(limit?: number, offset?: number) {
+    console.log(`🚀 Syncing rollcall scores\n`)
 
-    // Apply offset and limit for batching
-    const startIndex = offset || 0
-    const endIndex = limit ? startIndex + limit : votes.length
-    votes = votes.slice(startIndex, endIndex)
+    const prisma = new PrismaClient()
+    const list = await fetchRollcalls()
 
-    if (offset || limit) {
-        console.log(`\n⚠️  Processing votes ${startIndex}-${Math.min(endIndex, votes.length + startIndex) - 1} (limit: ${limit}, offset: ${offset})\n`)
-    }
+    // FIXED SLICE LOGIC
+    const start = offset ?? 0
+    const end = limit ? start + limit : list.length
+    const slice = list.slice(start, end)
 
-    console.log(`📊 Processing ${votes.length} rollcall vote(s)\n`)
+    console.log(`Total rollcall votes fetched: ${list.length}`)
+    console.log(`Processing ${slice.length} votes (start=${start}, end=${end})`)
 
-
-    let processedCount = 0
-    let totalRollcallScores = 0
-    let totalMaverickScores = 0
-    let errorCount = 0
+    let totalRoll = 0
+    let totalMaverick = 0
     const allErrors: string[] = []
 
-    for (const [index, vote] of votes.entries()) {
-        try {
-            console.log(`\n📋 Processing vote ${index + 1}/${votes.length}`)
-            console.log(`   Date: ${vote.voteDate}`)
-            console.log(`   Issue: ${vote.voteIssue.substring(0, 80)}...`)
+    for (let i = 0; i < slice.length; i++) {
+        const vote = slice[i]
+        console.log(`📘 Processing ${i + 1}/${slice.length}: ${vote.voteIssue.slice(0, 60)}...`)
 
-            const votingData = await parseVoteXLS(vote.url)
-            const result = await processVote(prisma, vote, votingData)
+        const parsed = await parseXLS(vote.url)
+        const result = await scoreVotes(prisma, vote, parsed)
 
-            totalRollcallScores += result.rollcallScores
-            totalMaverickScores += result.maverickScores
-            allErrors.push(...result.errors)
+        totalRoll += result.rollcall
+        totalMaverick += result.maverick
+        allErrors.push(...result.errors)
 
-            console.log(`   ✓ Created ${result.rollcallScores} ROLLCALL_VOTE scores, ${result.maverickScores} MAVERICK_BONUS scores`)
-
-            processedCount++
-
-            // Rate limiting - small delay between votes
-            if (index < votes.length - 1) {
-                await new Promise(resolve => setTimeout(resolve, 500))
-            }
-        } catch (error) {
-            console.error(`   ❌ Error:`, error instanceof Error ? error.message : error)
-            errorCount++
-        }
+        await sleep(250)
     }
 
-    console.log('\n\n✅ ROLLCALL_VOTE score fetching completed!')
+    console.log(`\n===== SUMMARY =====`)
+    console.log(`Processed: ${slice.length}`)
+    console.log(`Rollcall scores created: ${totalRoll}`)
+    console.log(`Maverick scores created: ${totalMaverick}`)
+    console.log(`Errors: ${allErrors.length}`)
 
     return {
-        processedCount,
-        errorCount,
-        totalRollcallScores,
-        totalMaverickScores,
+        processedCount: slice.length,
+        errorCount: allErrors.length,
+        totalRollcallScores: totalRoll,
+        totalMaverickScores: totalMaverick,
         errors: allErrors
     }
 }
