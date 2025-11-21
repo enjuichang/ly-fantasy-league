@@ -163,24 +163,9 @@ async function processProposeBills(
         // Check if bill has passed (三讀)
         const passed = isBillPassed(bill.議案狀態)
 
-        // Points: 6 base + 6 bonus if passed = 12 total for passed bills
-        const points = passed ? 12 : 6
-
         // Extract bill number and title
         const billNumber = bill.字號 || null
         const billTitle = bill.議案名稱 || null
-
-        // Create description in format: "Proposed: {title} (字號: {number})"
-        let description = 'Proposed'
-        if (billTitle) {
-            description += `: ${billTitle}`
-        }
-        if (billNumber) {
-            description += ` (字號: ${billNumber})`
-        }
-        if (passed) {
-            description += ' ✓ Passed'
-        }
 
         // Create metadata JSON with additional bill details
         const lawNumber = Array.isArray(bill.法律編號)
@@ -196,38 +181,83 @@ async function processProposeBills(
             passed
         })
 
-        // Check if score already exists for this specific bill
-        const existingScore = await prisma.score.findFirst({
+        // STEP 1: Create score for proposing the bill (6 points)
+        const existingProposeScore = await prisma.score.findFirst({
             where: {
                 legislatorId,
                 billNumber,
-                category: 'PROPOSE_BILL'
+                category: 'PROPOSE_BILL',
+                description: { contains: 'Proposed:' }
             }
         })
 
-        if (existingScore) {
-            // If status changed (e.g. passed), we might want to update it?
-            // For now, let's just skip if exists
-            // console.log(`  ⊘ Score already exists for bill ${billNumber || 'unknown'}`)
-            continue
+        if (!existingProposeScore) {
+            // Create description for proposing
+            let proposeDescription = 'Proposed'
+            if (billTitle) {
+                proposeDescription += `: ${billTitle}`
+            }
+            if (billNumber) {
+                proposeDescription += ` (字號: ${billNumber})`
+            }
+
+            // Create score record for proposing (6 points)
+            await prisma.score.create({
+                data: {
+                    legislatorId,
+                    date: billDate,
+                    points: 6,
+                    description: proposeDescription,
+                    category: 'PROPOSE_BILL',
+                    billNumber,
+                    billTitle,
+                    metadata
+                }
+            })
+
+            console.log(`  ✓ Created PROPOSE: 6pts - ${billTitle?.substring(0, 50)}${billTitle && billTitle.length > 50 ? '...' : ''}`)
+            scoresCreated++
         }
 
-        // Create score record
-        await prisma.score.create({
-            data: {
-                legislatorId,
-                date: billDate,
-                points,
-                description,
-                category: 'PROPOSE_BILL',
-                billNumber,
-                billTitle,
-                metadata
-            }
-        })
+        // STEP 2: Create separate score for bill passing (additional 6 points)
+        if (passed) {
+            const existingPassScore = await prisma.score.findFirst({
+                where: {
+                    legislatorId,
+                    billNumber,
+                    category: 'PROPOSE_BILL',
+                    description: { contains: 'Passed' }
+                }
+            })
 
-        console.log(`  ✓ Created: ${points}pts - ${billTitle?.substring(0, 50)}${billTitle && billTitle.length > 50 ? '...' : ''}${passed ? ' ✓' : ''}`)
-        scoresCreated++
+            if (!existingPassScore) {
+                // Create description for passing
+                let passDescription = 'Proposed Bill Passed'
+                if (billTitle) {
+                    passDescription += `: ${billTitle}`
+                }
+                if (billNumber) {
+                    passDescription += ` (字號: ${billNumber})`
+                }
+
+                // Create score record for passing (additional 6 points)
+                await prisma.score.create({
+                    data: {
+                        legislatorId,
+                        date: billDate,
+                        points: 6,
+                        description: passDescription,
+                        category: 'PROPOSE_BILL',
+                        billNumber,
+                        billTitle,
+                        metadata
+                    }
+                })
+
+                console.log(`  ✓ Created PASS: 6pts - ${billTitle?.substring(0, 50)}${billTitle && billTitle.length > 50 ? '...' : ''}`)
+                scoresCreated++
+            }
+        }
     }
 
     return scoresCreated

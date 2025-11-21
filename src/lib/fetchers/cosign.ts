@@ -145,6 +145,15 @@ async function processCosignBills(
 
     // Create a score entry for each individual bill
     for (const bill of bills) {
+        // FILTER: Only award points for bills that have passed third reading (三讀)
+        const billStatus = bill.議案狀態 || ''
+        const hasThirdReading = billStatus.includes('三讀')
+
+        if (!hasThirdReading) {
+            // Skip bills that haven't passed third reading
+            continue
+        }
+
         // Use 提案日期 (proposal date)
         const dateStr = bill.提案日期 || bill.最新進度日期
         if (!dateStr) {
@@ -162,7 +171,7 @@ async function processCosignBills(
         // Set time to midnight to avoid timezone issues
         billDate.setHours(0, 0, 0, 0)
 
-        // Points: 1 point for cosigning
+        // Points: 1 point for cosigning a PASSED bill
         const points = 1
 
         // Extract bill number and title
