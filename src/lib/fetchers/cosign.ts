@@ -171,7 +171,7 @@ async function processCosignBills(
         const billTitle = bill.議案名稱 || null
 
         // Create description
-        let description = 'Cosigned'
+        let description = 'Cosigned (Passed)'
         if (billTitle) {
             description += `: ${billTitle}`
         }

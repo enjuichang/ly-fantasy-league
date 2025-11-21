@@ -10,8 +10,140 @@ jobs:
   refresh-floor-speech:
     runs-on: ubuntu-latest
     steps:
-      - name: Sync Floor Speeches
+      - name: Sync Floor Speeches (Batch 1/23)
         run: |
-          curl -X GET "${{ secrets.APP_URL }}/api/refresh-data?type=floor_speech" \
+          curl -X GET "${{ secrets.APP_URL }}/api/refresh-data?type=floor_speech&limit=5&offset=0" \
+          -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+          --fail
+
+      - name: Sync Floor Speeches (Batch 2/23)
+        run: |
+          curl -X GET "${{ secrets.APP_URL }}/api/refresh-data?type=floor_speech&limit=5&offset=5" \
+          -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+          --fail
+
+      - name: Sync Floor Speeches (Batch 3/23)
+        run: |
+          curl -X GET "${{ secrets.APP_URL }}/api/refresh-data?type=floor_speech&limit=5&offset=10" \
+          -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+          --fail
+
+      - name: Sync Floor Speeches (Batch 4/23)
+        run: |
+          curl -X GET "${{ secrets.APP_URL }}/api/refresh-data?type=floor_speech&limit=5&offset=15" \
+          -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+          --fail
+
+      - name: Sync Floor Speeches (Batch 5/23)
+        run: |
+          curl -X GET "${{ secrets.APP_URL }}/api/refresh-data?type=floor_speech&limit=5&offset=20" \
+          -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+          --fail
+
+      - name: Sync Floor Speeches (Batch 6/23)
+        run: |
+          curl -X GET "${{ secrets.APP_URL }}/api/refresh-data?type=floor_speech&limit=5&offset=25" \
+          -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+          --fail
+
+      - name: Sync Floor Speeches (Batch 7/23)
+        run: |
+          curl -X GET "${{ secrets.APP_URL }}/api/refresh-data?type=floor_speech&limit=5&offset=30" \
+          -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+          --fail
+
+      - name: Sync Floor Speeches (Batch 8/23)
+        run: |
+          curl -X GET "${{ secrets.APP_URL }}/api/refresh-data?type=floor_speech&limit=5&offset=35" \
+          -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+          --fail
+
+      - name: Sync Floor Speeches (Batch 9/23)
+        run: |
+          curl -X GET "${{ secrets.APP_URL }}/api/refresh-data?type=floor_speech&limit=5&offset=40" \
+          -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+          --fail
+
+      - name: Sync Floor Speeches (Batch 10/23)
+        run: |
+          curl -X GET "${{ secrets.APP_URL }}/api/refresh-data?type=floor_speech&limit=5&offset=45" \
+          -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+          --fail
+
+      - name: Sync Floor Speeches (Batch 11/23)
+        run: |
+          curl -X GET "${{ secrets.APP_URL }}/api/refresh-data?type=floor_speech&limit=5&offset=50" \
+          -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+          --fail
+
+      - name: Sync Floor Speeches (Batch 12/23)
+        run: |
+          curl -X GET "${{ secrets.APP_URL }}/api/refresh-data?type=floor_speech&limit=5&offset=55" \
+          -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+          --fail
+
+      - name: Sync Floor Speeches (Batch 13/23)
+        run: |
+          curl -X GET "${{ secrets.APP_URL }}/api/refresh-data?type=floor_speech&limit=5&offset=60" \
+          -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+          --fail
+
+      - name: Sync Floor Speeches (Batch 14/23)
+        run: |
+          curl -X GET "${{ secrets.APP_URL }}/api/refresh-data?type=floor_speech&limit=5&offset=65" \
+          -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+          --fail
+
+      - name: Sync Floor Speeches (Batch 15/23)
+        run: |
+          curl -X GET "${{ secrets.APP_URL }}/api/refresh-data?type=floor_speech&limit=5&offset=70" \
+          -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+          --fail
+
+      - name: Sync Floor Speeches (Batch 16/23)
+        run: |
+          curl -X GET "${{ secrets.APP_URL }}/api/refresh-data?type=floor_speech&limit=5&offset=75" \
+          -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+          --fail
+
+      - name: Sync Floor Speeches (Batch 17/23)
+        run: |
+          curl -X GET "${{ secrets.APP_URL }}/api/refresh-data?type=floor_speech&limit=5&offset=80" \
+          -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+          --fail
+
+      - name: Sync Floor Speeches (Batch 18/23)
+        run: |
+          curl -X GET "${{ secrets.APP_URL }}/api/refresh-data?type=floor_speech&limit=5&offset=85" \
+          -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+          --fail
+
+      - name: Sync Floor Speeches (Batch 19/23)
+        run: |
+          curl -X GET "${{ secrets.APP_URL }}/api/refresh-data?type=floor_speech&limit=5&offset=90" \
+          -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+          --fail
+
+      - name: Sync Floor Speeches (Batch 20/23)
+        run: |
+          curl -X GET "${{ secrets.APP_URL }}/api/refresh-data?type=floor_speech&limit=5&offset=95" \
+          -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+          --fail
+
+      - name: Sync Floor Speeches (Batch 21/23)
+        run: |
+          curl -X GET "${{ secrets.APP_URL }}/api/refresh-data?type=floor_speech&limit=5&offset=100" \
+          -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+          --fail
+
+      - name: Sync Floor Speeches (Batch 22/23)
+        run: |
+          curl -X GET "${{ secrets.APP_URL }}/api/refresh-data?type=floor_speech&limit=5&offset=105" \
+          -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+          --fail
+
+      - name: Sync Floor Speeches (Batch 23/23)
+        run: |
+          curl -X GET "${{ secrets.APP_URL }}/api/refresh-data?type=floor_speech&limit=5&offset=110" \
           -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
           --fail

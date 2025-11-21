@@ -19,6 +19,7 @@
     "fetch:interpellation": "tsx prisma/scripts/fetch/fetch-interpellation-scores.ts",
     "fetch:rollcall": "tsx prisma/scripts/fetch/fetch-rollcall-scores.ts",
     "fetch:floor-speech": "tsx prisma/scripts/fetch/fetch-floor-speech-scores.ts",
+    "backfill:floor-speech": "tsx prisma/scripts/backfill-floor-speeches.ts",
     "clean:mock": "tsx prisma/scripts/utils/clean-mock-data.ts",
     "clean:bills": "tsx prisma/scripts/utils/clear-bill-scores.ts"
   },

@@ -60,7 +60,9 @@ export async function GET(request: NextRequest) {
         if (!type || type === 'all' || type === 'floor_speech') {
             const limit = searchParams.get('limit') ? parseInt(searchParams.get('limit')!) : undefined
             const offset = searchParams.get('offset') ? parseInt(searchParams.get('offset')!) : undefined
-            results.floor_speech = await syncFloorSpeechScores(prisma, undefined, limit, offset)
+            const fromDate = searchParams.get('from_date') ? new Date(searchParams.get('from_date')!) : undefined
+            const toDate = searchParams.get('to_date') ? new Date(searchParams.get('to_date')!) : undefined
+            results.floor_speech = await syncFloorSpeechScores(prisma, undefined, limit, offset, fromDate, toDate)
         }
 
         return NextResponse.json({

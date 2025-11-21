@@ -192,7 +192,14 @@ async function processFloorSpeechesForLegislator(
     return scoresCreated
 }
 
-export async function syncFloorSpeechScores(prisma: PrismaClient, specificLegislator?: string, limit?: number, offset?: number) {
+export async function syncFloorSpeechScores(
+    prisma: PrismaClient,
+    specificLegislator?: string,
+    limit?: number,
+    offset?: number,
+    fromDate?: Date,
+    toDate?: Date
+) {
     console.log('🚀 Starting FLOOR_SPEECH score fetching...\n')
 
     // Fetch legislators from database
@@ -214,16 +221,19 @@ export async function syncFloorSpeechScores(prisma: PrismaClient, specificLegisl
 
     console.log(`📊 Processing ${legislators.length} legislator(s)\n`)
 
-    // Fetch speeches for the last 30 days
-    const toDate = new Date()
-    const fromDate = new Date()
-    fromDate.setDate(fromDate.getDate() - 30)
+    // Use provided dates or default to last 30 days
+    const endDate = toDate || new Date()
+    const startDate = fromDate || (() => {
+        const date = new Date()
+        date.setDate(date.getDate() - 30)
+        return date
+    })()
 
-    console.log('📅 Fetching floor speeches for the last 30 days...\n')
+    console.log(`📅 Fetching floor speeches from ${startDate.toISOString().split('T')[0]} to ${endDate.toISOString().split('T')[0]}...\n`)
 
     let meetings: FloorSpeechMeeting[] = []
     try {
-        meetings = await fetchFloorSpeeches(fromDate, toDate)
+        meetings = await fetchFloorSpeeches(startDate, endDate)
     } catch (error) {
         console.error('❌ Failed to fetch floor speeches:', error)
         return {
