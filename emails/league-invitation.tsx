@@ -43,7 +43,7 @@ export const LeagueInvitationEmail = ({
           </Text>
 
           <Section style={leagueCard}>
-            <Text style={leagueName}>{leagueName}</Text>
+            <Text style={leagueNameStyle}>{leagueName}</Text>
           </Section>
 
           <Text style={text}>
@@ -142,7 +142,7 @@ const leagueCard = {
   textAlign: 'center' as const,
 }
 
-const leagueName = {
+const leagueNameStyle = {
   color: '#094D92',
   fontSize: '20px',
   fontWeight: '700',
