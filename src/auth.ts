@@ -10,6 +10,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     ...authConfig,
     adapter: PrismaAdapter(prisma),
     trustHost: true,
+    basePath: "/api/auth",
     providers: [
         Google({
             clientId: process.env.AUTH_GOOGLE_ID,
