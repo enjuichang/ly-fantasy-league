@@ -2,7 +2,7 @@ import { Resend } from 'resend'
 import { LeagueInvitationEmail } from '../../emails/league-invitation'
 import { render } from '@react-email/render'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+
 
 interface SendInvitationEmailParams {
   to: string
@@ -42,6 +42,9 @@ export async function sendInvitationEmail({
         inviteUrl,
       })
     )
+
+    // Initialize Resend client
+    const resend = new Resend(process.env.RESEND_API_KEY)
 
     // Send the email
     const { data, error } = await resend.emails.send({
