@@ -21,7 +21,7 @@ export default async function InvitePage({ params }: InvitePageProps) {
 
   // Require authentication
   if (!session?.user?.email) {
-    redirect(`/${locale}/sign-in?callbackUrl=/${locale}/invite/${token}`)
+    redirect(`/${locale}/signin?callbackUrl=/${locale}/invite/${token}`)
   }
 
   // Fetch invitation by token

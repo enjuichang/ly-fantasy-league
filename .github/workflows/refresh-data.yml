@@ -10,8 +10,32 @@ jobs:
   refresh:
     runs-on: ubuntu-latest
     steps:
-      - name: Call Refresh API
+      - name: Sync Rollcall Votes
         run: |
-          curl -X GET "${{ secrets.APP_URL }}/api/refresh-data?type=all" \
+          curl -X GET "${{ secrets.APP_URL }}/api/refresh-data?type=rollcall" \
+          -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+          --fail
+
+      - name: Sync Propose Bills (Batch 1/4)
+        run: |
+          curl -X GET "${{ secrets.APP_URL }}/api/refresh-data?type=propose&limit=30&offset=0" \
+          -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+          --fail
+
+      - name: Sync Propose Bills (Batch 2/4)
+        run: |
+          curl -X GET "${{ secrets.APP_URL }}/api/refresh-data?type=propose&limit=30&offset=30" \
+          -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+          --fail
+
+      - name: Sync Propose Bills (Batch 3/4)
+        run: |
+          curl -X GET "${{ secrets.APP_URL }}/api/refresh-data?type=propose&limit=30&offset=60" \
+          -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+          --fail
+
+      - name: Sync Propose Bills (Batch 4/4)
+        run: |
+          curl -X GET "${{ secrets.APP_URL }}/api/refresh-data?type=propose&limit=30&offset=90" \
           -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
           --fail

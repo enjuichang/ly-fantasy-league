@@ -33,10 +33,13 @@ export async function GET(request: NextRequest) {
 
         // Sync Propose Scores
         if (!type || type === 'all' || type === 'propose') {
+            // Parse pagination params
+            const limit = searchParams.get('limit') ? parseInt(searchParams.get('limit')!) : undefined
+            const offset = searchParams.get('offset') ? parseInt(searchParams.get('offset')!) : undefined
+
             // Propose sync is heavier as it iterates legislators
-            // We might want to limit this or split it?
-            // For now, let's run it but be aware of timeouts
-            results.propose = await syncProposeScores(prisma)
+            // We use pagination to avoid timeouts
+            results.propose = await syncProposeScores(prisma, undefined, limit, offset)
         }
 
         return NextResponse.json({

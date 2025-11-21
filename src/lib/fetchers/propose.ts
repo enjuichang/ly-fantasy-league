@@ -233,13 +233,15 @@ async function processProposeBills(
     return scoresCreated
 }
 
-export async function syncProposeScores(prisma: PrismaClient, specificLegislator?: string) {
+export async function syncProposeScores(prisma: PrismaClient, specificLegislator?: string, limit?: number, offset?: number) {
     console.log('🚀 Starting PROPOSE_BILL score fetching...\n')
 
     // Fetch legislators from database
     const legislators = await prisma.legislator.findMany({
         where: specificLegislator ? { nameCh: specificLegislator } : {},
-        orderBy: { nameCh: 'asc' }
+        orderBy: { nameCh: 'asc' },
+        take: limit,
+        skip: offset
     })
 
     if (legislators.length === 0) {
