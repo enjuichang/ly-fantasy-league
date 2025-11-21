@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
             // Support batching via rollcall_limit and rollcall_offset query params
             const rollcallLimit = searchParams.get('rollcall_limit') ? parseInt(searchParams.get('rollcall_limit')!) : 20
             const rollcallOffset = searchParams.get('rollcall_offset') ? parseInt(searchParams.get('rollcall_offset')!) : 0
-            results.rollcall = await syncRollcallScores(prisma, rollcallLimit, rollcallOffset)
+            results.rollcall = await syncRollcallScores(rollcallLimit, rollcallOffset)
         }
 
         // Sync Propose Scores
