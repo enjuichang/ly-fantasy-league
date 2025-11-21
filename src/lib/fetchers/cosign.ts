@@ -23,13 +23,6 @@ interface TaiwanAPIResponse {
     bills: CosignBill[]
 }
 
-// Extract only Chinese characters from name (remove English letters, spaces, special chars)
-function extractChineseName(name: string): string {
-    // Match Chinese characters (CJK Unified Ideographs)
-    const chineseChars = name.match(/[\u4e00-\u9fff]+/g)
-    return chineseChars ? chineseChars.join('') : name
-}
-
 // Helper function for fetch with retry
 async function fetchWithRetry(url: string, options: RequestInit = {}, retries = 3, backoff = 1000): Promise<Response> {
     try {
@@ -54,9 +47,8 @@ async function fetchWithRetry(url: string, options: RequestInit = {}, retries = 
 
 // Fetch cosign bills for a legislator
 async function fetchCosignBills(legislatorName: string): Promise<CosignBill[]> {
-    // Extract only Chinese characters to avoid API issues
-    const chineseOnly = extractChineseName(legislatorName)
-    const encodedName = encodeURIComponent(chineseOnly)
+    // Use the full legislator name (including Latin characters for indigenous legislators)
+    const encodedName = encodeURIComponent(legislatorName)
 
     // Request specific output fields for better data quality
     const outputFields = [

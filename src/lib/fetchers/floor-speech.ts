@@ -30,13 +30,6 @@ function fromROCDate(rocDateStr: string): Date {
     return new Date(gregorianYear, month - 1, day)
 }
 
-// Extract only Chinese characters from name (remove English letters, spaces, special chars)
-function extractChineseName(name: string): string {
-    // Match Chinese characters (CJK Unified Ideographs)
-    const chineseChars = name.match(/[\u4e00-\u9fff]+/g)
-    return chineseChars ? chineseChars.join('') : name
-}
-
 // Helper function for fetch with retry
 async function fetchWithRetry(url: string, options: RequestInit = {}, retries = 3, backoff = 1000): Promise<Response> {
     try {
@@ -133,11 +126,9 @@ async function processFloorSpeechesForLegislator(
     for (const meeting of meetings) {
         const speakerNames = parseSpeechersNames(meeting.speechers)
 
-        // Check if this legislator spoke (match by Chinese name only)
-        const chineseOnly = extractChineseName(legislatorName)
+        // Check if this legislator spoke (match by full name)
         const didSpeak = speakerNames.some(name => {
-            const speakerChinese = extractChineseName(name)
-            return speakerChinese === chineseOnly
+            return name === legislatorName
         })
 
         if (!didSpeak) continue

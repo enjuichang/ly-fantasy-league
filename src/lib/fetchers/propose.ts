@@ -28,13 +28,6 @@ function isBillPassed(status: string | undefined): boolean {
     return status.includes('三讀') || status.includes('通過')
 }
 
-// Extract only Chinese characters from name (remove English letters, spaces, special chars)
-function extractChineseName(name: string): string {
-    // Match Chinese characters (CJK Unified Ideographs)
-    const chineseChars = name.match(/[\u4e00-\u9fff]+/g)
-    return chineseChars ? chineseChars.join('') : name
-}
-
 // Helper function for fetch with retry
 async function fetchWithRetry(url: string, options: RequestInit = {}, retries = 3, backoff = 1000): Promise<Response> {
     try {
@@ -59,9 +52,8 @@ async function fetchWithRetry(url: string, options: RequestInit = {}, retries = 
 
 // Fetch proposed bills for a legislator
 async function fetchProposeBills(legislatorName: string): Promise<ProposeBill[]> {
-    // Extract only Chinese characters to avoid API issues with names like "伍麗華Saidhai‧Tahovecahe"
-    const chineseOnly = extractChineseName(legislatorName)
-    const encodedName = encodeURIComponent(chineseOnly)
+    // Use the full legislator name (including Latin characters for indigenous legislators)
+    const encodedName = encodeURIComponent(legislatorName)
 
     // Request specific output fields for better data quality
     const outputFields = [
@@ -87,6 +79,12 @@ async function fetchProposeBills(legislatorName: string): Promise<ProposeBill[]>
     }
 
     const data: TaiwanAPIResponse = await response.json()
+
+    // Validate that data.bills exists and is an array
+    if (!data.bills || !Array.isArray(data.bills)) {
+        throw new Error(`data.bills is not iterable (received: ${typeof data.bills})`)
+    }
+
     const allBills: ProposeBill[] = [...data.bills]
 
     // Fetch all pages if there are multiple
@@ -99,7 +97,12 @@ async function fetchProposeBills(legislatorName: string): Promise<ProposeBill[]>
 
             if (pageResponse.ok) {
                 const pageData: TaiwanAPIResponse = await pageResponse.json()
-                allBills.push(...pageData.bills)
+                // Validate page data
+                if (pageData.bills && Array.isArray(pageData.bills)) {
+                    allBills.push(...pageData.bills)
+                } else {
+                    console.warn(`  ⚠️  Page ${page} has invalid bills data, skipping`)
+                }
             }
         }
     }
