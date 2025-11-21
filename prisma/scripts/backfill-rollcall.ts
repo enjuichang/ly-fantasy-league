@@ -1,6 +1,7 @@
 import dotenv from "dotenv"
 dotenv.config({ path: ".env.local" })
 
+import * as XLSX from 'xlsx'
 import { syncRollcallScores } from "../../src/lib/fetchers/rollcall"
 
 /**
@@ -21,11 +22,16 @@ function sleep(ms: number) {
  */
 async function getTotalRollcalls(): Promise<number> {
     try {
-        const url = "https://data.ly.gov.tw/odw/openDatasetJson.action?id=370&selectTerm=11"
+        const url = "https://data.ly.gov.tw/odw/usageFile.action?id=370&type=CSV&fname=370_CSV.csv"
         const res = await fetch(url)
         if (!res.ok) throw new Error(`Failed to query API: ${res.status}`)
-        const json = await res.json()
-        return json.jsonList.filter((v: any) => v.voteType === "記名").length
+
+        const buf = await res.arrayBuffer()
+        const workbook = XLSX.read(buf, { type: 'array' })
+        const sheet = workbook.Sheets[workbook.SheetNames[0]]
+        const rows = XLSX.utils.sheet_to_json(sheet) as any[]
+
+        return rows.filter(row => String(row.term) === '11' && row.voteType === '記名').length
     } catch (err) {
         console.error("❌ Failed to fetch total rollcall count:", err)
         throw err
@@ -64,7 +70,7 @@ async function runBackfill() {
 
         let result
         try {
-            result = await syncRollcallScores(batchSize, offset)
+            result = await syncRollcallScores(batchSize, offset, undefined)
         } catch (err) {
             console.error(`❌ Batch ${batchIndex} failed:`, err)
             break

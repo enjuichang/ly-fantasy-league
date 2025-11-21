@@ -73,7 +73,7 @@ async function fetchWithRetry(url: string, retries = 3): Promise<Response> {
 }
 
 async function fetchRollcalls(): Promise<VoteRecord[]> {
-    const url = `https://data.ly.gov.tw/odw/openDatasetJson.action?id=370&selectTerm=11`
+    const url = `https://data.ly.gov.tw/odw/usageFile.action?id=370&type=CSV&fname=370_CSV.csv`
 
     let attempts = 0
     const maxAttempts = 5
@@ -81,16 +81,30 @@ async function fetchRollcalls(): Promise<VoteRecord[]> {
 
     while (attempts < maxAttempts) {
         try {
-            const res = await fetchWithRetry(url, 3) // this itself retries internally
-            const data = await res.json()
-            return data.jsonList.filter((v: VoteRecord) => v.voteType === "記名")
+            const res = await fetchWithRetry(url, 3)
+            const buf = await res.arrayBuffer()
+            const workbook = XLSX.read(buf, { type: 'array' })
+            const sheet = workbook.Sheets[workbook.SheetNames[0]]
+            const rows = XLSX.utils.sheet_to_json(sheet) as any[]
+
+            return rows
+                .filter(row => String(row.term) === '11' && row.voteType === '記名')
+                .map(row => ({
+                    voteDate: row.voteDate,
+                    term: String(row.term),
+                    voteIssue: row.voteIssue,
+                    voteType: row.voteType,
+                    sessionPeriod: String(row.sessionPeriod),
+                    url: row.url,
+                    voteTime: row.voteTime
+                }))
         } catch (err) {
             attempts++
             console.warn(`⚠️ fetchRollcalls failed (attempt ${attempts}/${maxAttempts}):`, err)
 
             if (attempts === maxAttempts) throw err
 
-            await delay(1000 * attempts) // exponential backoff
+            await delay(1000 * attempts)
         }
     }
 
@@ -304,11 +318,24 @@ async function scoreVotes(
     MASTER SYNC FUNCTION
 ============================================================ */
 
-export async function syncRollcallScores(limit?: number, offset?: number) {
-    console.log(`🚀 Syncing rollcall scores\n`)
+export async function syncRollcallScores(limit?: number, offset?: number, lookbackDays?: number) {
+    console.log(`🚀 Syncing rollcall scores${lookbackDays ? ` (last ${lookbackDays} days)` : ''}\n`)
 
     const prisma = new PrismaClient()
-    const list = await fetchRollcalls()
+    let list = await fetchRollcalls()
+
+    // Filter by date if lookbackDays is provided
+    if (lookbackDays) {
+        const cutoff = new Date()
+        cutoff.setDate(cutoff.getDate() - lookbackDays)
+        cutoff.setHours(0, 0, 0, 0)
+
+        list = list.filter(vote => {
+            const voteDate = convertROC(vote.voteDate)
+            return voteDate >= cutoff
+        })
+        console.log(`Filtered to ${list.length} votes since ${cutoff.toISOString().split('T')[0]}`)
+    }
 
     // FIXED SLICE LOGIC
     const start = offset ?? 0
