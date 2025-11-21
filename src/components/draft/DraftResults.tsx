@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { PartyBadge } from '@/components/ui/party-badge'
 import { Button } from '@/components/ui/button'
 import PlayerHistoryModal from '@/components/team/PlayerHistoryModal'
 
@@ -176,7 +177,9 @@ export default function DraftResults({ picks }: DraftResultsProps) {
                                                     )}
                                                     <div>
                                                         <p className="font-medium">{pick.legislator.nameCh}</p>
-                                                        <p className="text-sm text-muted-foreground">{pick.legislator.party}</p>
+                                                        <p className="text-sm text-muted-foreground">
+                                                            <PartyBadge party={pick.legislator.party} />
+                                                        </p>
                                                     </div>
                                                 </div>
                                                 <div className="text-right">

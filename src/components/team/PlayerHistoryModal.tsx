@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Badge } from '@/components/ui/badge'
+import { PartyBadge } from '@/components/ui/party-badge'
 import { ChevronDown, ChevronRight } from 'lucide-react'
 
 interface Score {
@@ -151,7 +152,9 @@ export default function PlayerHistoryModal({ legislator, isOpen, onClose }: Play
                             )}
                             <div>
                                 <p className="text-2xl font-bold">{legislator.nameCh}</p>
-                                <p className="text-sm text-muted-foreground">{legislator.party}</p>
+                                <p className="text-sm text-muted-foreground">
+                                    <PartyBadge party={legislator.party} />
+                                </p>
                             </div>
                         </div>
                         <div className="text-right">

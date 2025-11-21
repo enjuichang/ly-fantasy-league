@@ -26,6 +26,7 @@ import { saveDraftPreferences } from '@/app/actions'
 import PlayerHistoryModal from '@/components/team/PlayerHistoryModal'
 import { calculateAverageScore } from '@/lib/scoring-client'
 import { LeaveIndicator } from '@/components/ui/leave-indicator'
+import { PartyBadge } from '@/components/ui/party-badge'
 import LegislatorsList from '@/components/shared/LegislatorsList'
 import { useTranslations } from 'next-intl'
 
@@ -105,7 +106,9 @@ function SortableItem({ id, legislator, onRemove, onViewHistory }: { id: string,
                             leaveReason={legislator.leaveReason || null}
                         />
                     </div>
-                    <p className="text-xs text-muted-foreground">{legislator.party}</p>
+                    <p className="text-xs text-muted-foreground">
+                        <PartyBadge party={legislator.party} />
+                    </p>
                 </div>
                 <div className="text-right mr-2">
                     <p className="text-sm font-semibold text-blue-600">{avgScore.toFixed(1)}</p>

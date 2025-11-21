@@ -4,25 +4,17 @@ import { getTranslations } from 'next-intl/server'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { PartyBadge } from '@/components/ui/party-badge'
 import { ChevronLeft } from 'lucide-react'
 import LegislatorDetailClient from '@/components/legislators/LegislatorDetailClient'
 import { getLegislatorById } from '@/app/actions'
+
 
 interface LegislatorDetailPageProps {
   params: Promise<{
     id: string
     locale: string
   }>
-}
-
-// Party color mapping
-const getPartyColor = (party: string): string => {
-  const lowerParty = party.toLowerCase()
-  if (lowerParty.includes('國民黨') || lowerParty.includes('kmt')) return 'bg-blue-500'
-  if (lowerParty.includes('民進黨') || lowerParty.includes('dpp')) return 'bg-green-600'
-  if (lowerParty.includes('民眾黨') || lowerParty.includes('tpp')) return 'bg-cyan-500'
-  if (lowerParty.includes('時代力量') || lowerParty.includes('npp')) return 'bg-yellow-500'
-  return 'bg-gray-500'
 }
 
 export default async function LegislatorDetailPage({ params }: LegislatorDetailPageProps) {
@@ -89,9 +81,7 @@ export default async function LegislatorDetailPage({ params }: LegislatorDetailP
                 {/* Party Badge */}
                 <div className="flex items-center gap-2">
                   <span className="text-sm text-muted-foreground">{t('partyLabel')}:</span>
-                  <Badge className={`${getPartyColor(legislator.party)} text-white`}>
-                    {legislator.party}
-                  </Badge>
+                  <PartyBadge party={legislator.party} />
                 </div>
 
                 {/* Region */}

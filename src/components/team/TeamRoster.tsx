@@ -10,6 +10,7 @@ import PlayerHistoryModal from './PlayerHistoryModal'
 import { toggleBenchStatus, dropPlayer } from '@/app/actions'
 import { LeaveIndicator } from '@/components/ui/leave-indicator'
 import { ErrorIndicator } from '@/components/ui/error-indicator'
+import { PartyBadge } from '@/components/ui/party-badge'
 
 interface Score {
     id: string
@@ -183,7 +184,9 @@ export default function TeamRoster({
                                 errorReason={leg.errorReason || null}
                             />
                         </div>
-                        <div className="text-sm text-muted-foreground">{leg.party} • {leg.region}</div>
+                        <div className="text-sm text-muted-foreground">
+                            <PartyBadge party={leg.party} /> • {leg.region}
+                        </div>
                     </div>
                     <div className="text-right">
                         <div className="text-lg font-bold text-blue-600">
@@ -311,7 +314,9 @@ export default function TeamRoster({
                                     )}
                                     <div className="flex-1">
                                         <div className="font-medium">{leg.nameCh}</div>
-                                        <div className="text-sm text-muted-foreground">{leg.party}</div>
+                                        <div className="text-sm text-muted-foreground">
+                                            <PartyBadge party={leg.party} />
+                                        </div>
                                     </div>
                                 </div>
                             ))}

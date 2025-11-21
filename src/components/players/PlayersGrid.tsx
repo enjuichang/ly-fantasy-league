@@ -8,6 +8,7 @@ import PlayerHistoryModal from "@/components/team/PlayerHistoryModal"
 import PointsBreakdown from "@/components/team/PointsBreakdown"
 import { pickupPlayer } from '@/app/actions'
 import { LeaveIndicator } from "@/components/ui/leave-indicator"
+import { PartyBadge } from "@/components/ui/party-badge"
 import LegislatorsList from '@/components/shared/LegislatorsList'
 import { useTranslations } from 'next-intl'
 
@@ -179,7 +180,9 @@ export default function PlayersGrid({ players, weeklyScores, currentWeekStart, c
                                                 leaveReason={pickupModalPlayer.leaveReason}
                                             />
                                         </div>
-                                        <div className="text-sm text-muted-foreground">{pickupModalPlayer.party}</div>
+                                        <div className="text-sm text-muted-foreground">
+                                            <PartyBadge party={pickupModalPlayer.party} />
+                                        </div>
                                     </div>
                                     <div className="text-right">
                                         <div className="text-sm text-muted-foreground">{t('pickupModal.lastWeek')}</div>
@@ -224,7 +227,7 @@ export default function PlayersGrid({ players, weeklyScores, currentWeekStart, c
                                                                 />
                                                             </div>
                                                             <div className="text-xs text-muted-foreground">
-                                                                {leg.party} {isBench && `• ${t('pickupModal.bench')}`}
+                                                                <PartyBadge party={leg.party} /> {isBench && `• ${t('pickupModal.bench')}`}
                                                             </div>
                                                         </div>
                                                         <div className="text-right">

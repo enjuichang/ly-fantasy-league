@@ -6,6 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Button } from '@/components/ui/button'
 import { LeaveIndicator } from '@/components/ui/leave-indicator'
 import { ErrorIndicator } from '@/components/ui/error-indicator'
+import { PartyBadge } from '@/components/ui/party-badge'
 import { ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react'
 import type { CategoryScores } from '@/lib/scoring-client'
 
@@ -267,7 +268,7 @@ export default function LegislatorsList({
                     />
                   </div>
                 </TableCell>
-                <TableCell>{legislator.party}</TableCell>
+                <TableCell><PartyBadge party={legislator.party} /></TableCell>
                 <TableCell className="text-muted-foreground">{legislator.areaName || '-'}</TableCell>
                 <TableCell className="text-right bg-primary/10">{legislator.lastWeekScores.PROPOSE_BILL.toFixed(1)}</TableCell>
                 <TableCell className="text-right bg-primary/10">{legislator.lastWeekScores.COSIGN_BILL.toFixed(1)}</TableCell>

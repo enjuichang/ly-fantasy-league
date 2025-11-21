@@ -128,13 +128,12 @@ export default function LegislatorDetailClient({ legislator, locale }: Legislato
                 <YAxis />
                 <Tooltip />
                 <Line
-                  type="linear"
+                  type="monotone"
                   dataKey="points"
-                  stroke="hsl(var(--primary))"
-                  strokeWidth={3}
-                  dot={{ fill: 'hsl(var(--primary))', r: 5 }}
-                  connectNulls={true}
-                  isAnimationActive={false}
+                  stroke="#2563eb"
+                  strokeWidth={2}
+                  dot={{ fill: '#2563eb', r: 4 }}
+                  activeDot={{ r: 6 }}
                 />
               </LineChart>
             </ResponsiveContainer>
