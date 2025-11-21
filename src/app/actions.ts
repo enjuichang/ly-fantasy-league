@@ -952,3 +952,95 @@ export async function getLeagueActivities(leagueId: string, limit: number = 50) 
 
     return activities
 }
+
+export async function getLegislatorsWithStats() {
+    const seasonStart = new Date('2024-02-01')
+    const { getCurrentWeek, getWeekDateRange } = await import("@/lib/scoring-client")
+
+    const currentWeek = getCurrentWeek(seasonStart)
+    // If currentWeek is 0 (pre-season), lastWeek is invalid, so handle that
+    const lastWeek = currentWeek > 1 ? currentWeek - 1 : 0
+
+    let weekStart: Date | undefined
+    let weekEnd: Date | undefined
+
+    if (lastWeek > 0) {
+        const range = getWeekDateRange(seasonStart, lastWeek)
+        weekStart = range.weekStart
+        weekEnd = range.weekEnd
+    }
+
+    // 1. Fetch all legislators
+    const legislators = await prisma.legislator.findMany({
+        orderBy: { nameCh: 'asc' }
+    })
+
+    // 2. Fetch total scores grouped by legislator and category
+    const totalScoresRaw = await prisma.score.groupBy({
+        by: ['legislatorId', 'category'],
+        _sum: { points: true }
+    })
+
+    // 3. Fetch last week scores grouped by legislator and category (only if lastWeek > 0)
+    let lastWeekScoresRaw: any[] = []
+    if (weekStart && weekEnd) {
+        lastWeekScoresRaw = await prisma.score.groupBy({
+            by: ['legislatorId', 'category'],
+            where: {
+                date: {
+                    gte: weekStart,
+                    lte: weekEnd
+                }
+            },
+            _sum: { points: true }
+        })
+    }
+
+    // 4. Map results
+    return legislators.map(leg => {
+        // Process totals
+        const legTotalScores = totalScoresRaw.filter(s => s.legislatorId === leg.id)
+        const totalBreakdown = {
+            PROPOSE_BILL: 0, COSIGN_BILL: 0, FLOOR_SPEECH: 0, WRITTEN_SPEECH: 0, ROLLCALL_VOTE: 0, MAVERICK_BONUS: 0, total: 0
+        }
+        legTotalScores.forEach(s => {
+            if (s.category in totalBreakdown) {
+                // @ts-ignore
+                totalBreakdown[s.category] += s._sum.points || 0
+            }
+            totalBreakdown.total += s._sum.points || 0
+        })
+
+        // Calculate averages (using season weeks)
+        // Avoid division by zero
+        const weeksToDivide = currentWeek > 0 ? currentWeek : 1
+        const averageScores = {
+            PROPOSE_BILL: totalBreakdown.PROPOSE_BILL / weeksToDivide,
+            COSIGN_BILL: totalBreakdown.COSIGN_BILL / weeksToDivide,
+            FLOOR_SPEECH: totalBreakdown.FLOOR_SPEECH / weeksToDivide,
+            WRITTEN_SPEECH: totalBreakdown.WRITTEN_SPEECH / weeksToDivide,
+            ROLLCALL_VOTE: totalBreakdown.ROLLCALL_VOTE / weeksToDivide,
+            MAVERICK_BONUS: totalBreakdown.MAVERICK_BONUS / weeksToDivide,
+            total: totalBreakdown.total / weeksToDivide
+        }
+
+        // Process last week
+        const legLastWeekScores = lastWeekScoresRaw.filter((s: any) => s.legislatorId === leg.id)
+        const lastWeekScores = {
+            PROPOSE_BILL: 0, COSIGN_BILL: 0, FLOOR_SPEECH: 0, WRITTEN_SPEECH: 0, ROLLCALL_VOTE: 0, MAVERICK_BONUS: 0, total: 0
+        }
+        legLastWeekScores.forEach((s: any) => {
+            if (s.category in lastWeekScores) {
+                // @ts-ignore
+                lastWeekScores[s.category] += s._sum.points || 0
+            }
+            lastWeekScores.total += s._sum.points || 0
+        })
+
+        return {
+            ...leg,
+            averageScores,
+            lastWeekScores
+        }
+    })
+}

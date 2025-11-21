@@ -1,4 +1,4 @@
-import { getAllLegislators } from "@/app/actions"
+import { getLegislatorsWithStats } from "@/app/actions"
 import { getTranslations } from 'next-intl/server'
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
@@ -6,23 +6,7 @@ import LegislatorsGrid from "@/components/legislators/LegislatorsGrid"
 
 export default async function LegislatorsPage() {
     const t = await getTranslations('legislatorsPage')
-    const legislators = await getAllLegislators()
-
-    // Calculate score breakdowns for each legislator
-    const {
-        getLastWeekScoresByCategory,
-        getAverageScoresByCategory
-    } = await import("@/lib/scoring-utils")
-
-    // Use a default season start date (can be modified if needed)
-    // This represents when the current legislative session started
-    const defaultSeasonStart = new Date('2024-02-01')
-
-    const legislatorsWithScoreBreakdowns = legislators.map(legislator => ({
-        ...legislator,
-        lastWeekScores: getLastWeekScoresByCategory(legislator.scores || [], defaultSeasonStart),
-        averageScores: getAverageScoresByCategory(legislator.scores || [])
-    }))
+    const legislatorsWithScoreBreakdowns = await getLegislatorsWithStats()
 
     return (
         <div className="container mx-auto p-6 space-y-6">
