@@ -64,27 +64,75 @@ jobs:
           -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
           --fail
 
-      - name: Sync Written Interpellations (Batch 1/4)
+      - name: Sync Written Interpellations (Batch 1/12)
         run: |
-          curl -X GET "${{ secrets.APP_URL }}/api/refresh-data?type=written_interpellation&limit=30&offset=0" \
+          curl -X GET "${{ secrets.APP_URL }}/api/refresh-data?type=written_interpellation&limit=10&offset=0" \
           -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
           --fail
 
-      - name: Sync Written Interpellations (Batch 2/4)
+      - name: Sync Written Interpellations (Batch 2/12)
         run: |
-          curl -X GET "${{ secrets.APP_URL }}/api/refresh-data?type=written_interpellation&limit=30&offset=30" \
+          curl -X GET "${{ secrets.APP_URL }}/api/refresh-data?type=written_interpellation&limit=10&offset=10" \
           -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
           --fail
 
-      - name: Sync Written Interpellations (Batch 3/4)
+      - name: Sync Written Interpellations (Batch 3/12)
         run: |
-          curl -X GET "${{ secrets.APP_URL }}/api/refresh-data?type=written_interpellation&limit=30&offset=60" \
+          curl -X GET "${{ secrets.APP_URL }}/api/refresh-data?type=written_interpellation&limit=10&offset=20" \
           -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
           --fail
 
-      - name: Sync Written Interpellations (Batch 4/4)
+      - name: Sync Written Interpellations (Batch 4/12)
         run: |
-          curl -X GET "${{ secrets.APP_URL }}/api/refresh-data?type=written_interpellation&limit=30&offset=90" \
+          curl -X GET "${{ secrets.APP_URL }}/api/refresh-data?type=written_interpellation&limit=10&offset=30" \
+          -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+          --fail
+
+      - name: Sync Written Interpellations (Batch 5/12)
+        run: |
+          curl -X GET "${{ secrets.APP_URL }}/api/refresh-data?type=written_interpellation&limit=10&offset=40" \
+          -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+          --fail
+
+      - name: Sync Written Interpellations (Batch 6/12)
+        run: |
+          curl -X GET "${{ secrets.APP_URL }}/api/refresh-data?type=written_interpellation&limit=10&offset=50" \
+          -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+          --fail
+
+      - name: Sync Written Interpellations (Batch 7/12)
+        run: |
+          curl -X GET "${{ secrets.APP_URL }}/api/refresh-data?type=written_interpellation&limit=10&offset=60" \
+          -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+          --fail
+
+      - name: Sync Written Interpellations (Batch 8/12)
+        run: |
+          curl -X GET "${{ secrets.APP_URL }}/api/refresh-data?type=written_interpellation&limit=10&offset=70" \
+          -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+          --fail
+
+      - name: Sync Written Interpellations (Batch 9/12)
+        run: |
+          curl -X GET "${{ secrets.APP_URL }}/api/refresh-data?type=written_interpellation&limit=10&offset=80" \
+          -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+          --fail
+
+      - name: Sync Written Interpellations (Batch 10/12)
+        run: |
+          curl -X GET "${{ secrets.APP_URL }}/api/refresh-data?type=written_interpellation&limit=10&offset=90" \
+          -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+          --fail
+
+      - name: Sync Written Interpellations (Batch 11/12)
+        run: |
+          curl -X GET "${{ secrets.APP_URL }}/api/refresh-data?type=written_interpellation&limit=10&offset=100" \
+          -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+          --fail
+
+      - name: Sync Written Interpellations (Batch 12/12)
+        run: |
+          curl -X GET "${{ secrets.APP_URL }}/api/refresh-data?type=written_interpellation&limit=10&offset=110" \
           -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
           --fail
 
