@@ -19,7 +19,7 @@ export default async function DraftPage({ params }: { params: Promise<{ id: stri
 
     if (!league) return <div>League not found</div>
 
-    // Get user's team
+    // Get user's team with limited score data for performance
     const userTeam = await prisma.team.findFirst({
         where: { leagueId: id, ownerId: session?.user?.id },
         include: {
@@ -28,7 +28,10 @@ export default async function DraftPage({ params }: { params: Promise<{ id: stri
                 include: {
                     legislator: {
                         include: {
-                            scores: true
+                            scores: {
+                                orderBy: { date: 'desc' },
+                                take: 50 // Limit to last 50 scores
+                            }
                         }
                     }
                 }
@@ -36,10 +39,21 @@ export default async function DraftPage({ params }: { params: Promise<{ id: stri
         }
     })
 
-    // Get all legislators for selection with their scores
+    // Get all legislators with only recent scores for performance
+    const oneWeekAgo = new Date(league.seasonStart)
+    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7)
+
     const allLegislators = await prisma.legislator.findMany({
         include: {
-            scores: true
+            scores: {
+                where: {
+                    date: {
+                        gte: oneWeekAgo
+                    }
+                },
+                orderBy: { date: 'desc' },
+                take: 50 // Limit to last 50 scores per legislator
+            }
         },
         orderBy: { nameCh: 'asc' }
     })
