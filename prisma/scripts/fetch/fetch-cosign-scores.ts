@@ -31,18 +31,10 @@ function isBillPassed(status: string | undefined): boolean {
     return status.includes('三讀') || status.includes('通過')
 }
 
-// Extract only Chinese characters from name (remove English letters, spaces, special chars)
-function extractChineseName(name: string): string {
-    // Match Chinese characters (CJK Unified Ideographs)
-    const chineseChars = name.match(/[\u4e00-\u9fff]+/g)
-    return chineseChars ? chineseChars.join('') : name
-}
-
 // Fetch cosigned bills for a legislator
 async function fetchCosignBills(legislatorName: string): Promise<CosignBill[]> {
-    // Extract only Chinese characters to avoid API issues with names like "伍麗華Saidhai‧Tahovecahe"
-    const chineseOnly = extractChineseName(legislatorName)
-    const encodedName = encodeURIComponent(chineseOnly)
+    // Use the full legislator name (including Latin characters for indigenous legislators)
+    const encodedName = encodeURIComponent(legislatorName)
 
     // Request specific output fields for better data quality
     const outputFields = [

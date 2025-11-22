@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client'
-import { generateRoundRobinSchedule } from '../src/lib/matchup-logic'
+import { generateRoundRobinSchedule } from '../../../src/lib/matchup-logic'
 
 const prisma = new PrismaClient()
 

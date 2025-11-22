@@ -4,7 +4,7 @@
  */
 
 import { PrismaClient } from '@prisma/client'
-import { syncProposeScores } from '../src/lib/fetchers'
+import { syncProposeScores } from '../../../src/lib/fetchers'
 
 const prisma = new PrismaClient()
 

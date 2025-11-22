@@ -30,18 +30,10 @@ function getWeekStart(date: Date): Date {
     return d
 }
 
-// Extract only Chinese characters from name (remove English letters, spaces, special chars)
-function extractChineseName(name: string): string {
-    // Match Chinese characters (CJK Unified Ideographs)
-    const chineseChars = name.match(/[\u4e00-\u9fff]+/g)
-    return chineseChars ? chineseChars.join('') : name
-}
-
 // Fetch interpellations (floor speeches) for a legislator
 async function fetchInterpellations(legislatorName: string): Promise<Interpellation[]> {
-    // Extract only Chinese characters to avoid API issues with names like "伍麗華Saidhai‧Tahovecahe"
-    const chineseOnly = extractChineseName(legislatorName)
-    const encodedName = encodeURIComponent(chineseOnly)
+    // Use the full legislator name (including Latin characters for indigenous legislators)
+    const encodedName = encodeURIComponent(legislatorName)
 
     // Use general endpoint with filters since legislator-specific endpoint returns 0 results
     // Use specific filters directly as query parameters

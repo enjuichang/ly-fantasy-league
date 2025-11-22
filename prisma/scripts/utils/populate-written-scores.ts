@@ -5,7 +5,7 @@
  */
 
 import { PrismaClient } from '@prisma/client'
-import { syncWrittenInterpellationScores } from '../src/lib/fetchers'
+import { syncWrittenInterpellationScores } from '../../../src/lib/fetchers'
 
 const prisma = new PrismaClient()
 
