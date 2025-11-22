@@ -712,13 +712,12 @@ export async function toggleBenchStatus(
         if (rosterCount >= 6) {
             // Roster is full - need to swap
             if (!swapWithLegislatorId) {
-                // Auto-swap with first roster player
-                const firstRosterPlayer = team.legislators.find(leg => !benchIds.has(leg.id) && leg.id !== legislatorId)
-
-                if (!firstRosterPlayer) {
-                    return { success: false, message: "Unable to swap - roster configuration error." }
+                // Need user to select which roster player to swap with
+                return {
+                    success: false,
+                    needsSwapSelection: true,
+                    message: "Roster is full. Please select a roster player to swap with."
                 }
-                swapWithLegislatorId = firstRosterPlayer.id
             }
 
             // Perform swap: remove legislatorId from bench, add swapWith to bench

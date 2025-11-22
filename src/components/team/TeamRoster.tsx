@@ -68,6 +68,7 @@ export default function TeamRoster({
     const [showSwapModal, setShowSwapModal] = useState(false)
     const [playerToMove, setPlayerToMove] = useState<string | null>(null)
     const [selectedSwapTarget, setSelectedSwapTarget] = useState<string | null>(null)
+    const [swapTargets, setSwapTargets] = useState<Legislator[]>([])
 
     const benchIds = new Set(benchLegislatorIds)
     const rosterLegislators = legislators.filter(leg => !benchIds.has(leg.id))
@@ -92,7 +93,10 @@ export default function TeamRoster({
                 // Check if we need to show swap selection modal
                 if ((result as any).needsSwapSelection) {
                     setPlayerToMove(legislatorId)
-                    setSelectedSwapTarget(benchLegislators[0]?.id || null)
+                    const isBenchPlayer = benchIds.has(legislatorId)
+                    const targets = isBenchPlayer ? rosterLegislators : benchLegislators
+                    setSwapTargets(targets)
+                    setSelectedSwapTarget(targets[0]?.id || null)
                     setShowSwapModal(true)
                 } else {
                     alert(result.message)
@@ -286,7 +290,7 @@ export default function TeamRoster({
                             {t('swapModal.description')}
                         </p>
                         <div className="space-y-2">
-                            {benchLegislators.map(leg => (
+                            {swapTargets.map(leg => (
                                 <div
                                     key={leg.id}
                                     className={`flex items-center gap-3 p-3 border rounded-lg cursor-pointer transition-colors ${selectedSwapTarget === leg.id
