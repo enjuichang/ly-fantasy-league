@@ -985,7 +985,7 @@ export async function getLegislatorsWithStats() {
     let lastWeekScoresRaw: any[] = []
     if (weekStart && weekEnd) {
         lastWeekScoresRaw = await prisma.score.groupBy({
-            by: ['legislatorId', 'category'],
+            by: ['legislatorId', 'category'] as const,
             where: {
                 date: {
                     gte: weekStart,
@@ -993,7 +993,7 @@ export async function getLegislatorsWithStats() {
                 }
             },
             _sum: { points: true }
-        })
+        } as any)
     }
 
     // 4. Map results
