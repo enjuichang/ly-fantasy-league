@@ -23,11 +23,11 @@
     "backfill:rollcall": "tsx prisma/scripts/backfill-rollcall.ts",
     "clean:mock": "tsx prisma/scripts/utils/clean-mock-data.ts",
     "clean:bills": "tsx prisma/scripts/utils/clear-bill-scores.ts",
-    "test:points": "tsx prisma/scripts/test-apis/test-point-values.ts",
-    "test:fetch-propose": "tsx prisma/scripts/test-apis/test-fetch-propose.ts",
-    "test:fetch-cosign": "tsx prisma/scripts/test-apis/test-fetch-cosign.ts",
-    "test:fetch-written": "tsx prisma/scripts/test-apis/test-fetch-written.ts",
-    "test:all-fetchers": "tsx prisma/scripts/test-apis/run-all-tests.ts"
+    "test:points": "tsx tests/integration/database/test-point-values.test.ts",
+    "test:fetch-propose": "tsx tests/integration/fetchers/test-fetch-propose.test.ts",
+    "test:fetch-cosign": "tsx tests/integration/fetchers/test-fetch-cosign.test.ts",
+    "test:fetch-written": "tsx tests/integration/fetchers/test-fetch-written.test.ts",
+    "test:all-integration": "tsx tests/integration/run-all-integration-tests.ts"
   },
   "prisma": {
     "seed": "tsx prisma/scripts/seed/seed.ts"

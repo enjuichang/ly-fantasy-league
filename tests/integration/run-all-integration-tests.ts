@@ -10,19 +10,19 @@ async function runAllTests() {
     const tests = [
         {
             name: 'Point Values Verification',
-            script: 'npx tsx prisma/scripts/test-apis/test-point-values.ts'
+            script: 'npx tsx tests/integration/database/test-point-values.test.ts'
         },
         {
             name: 'Propose Bill Fetcher',
-            script: 'npx tsx prisma/scripts/test-apis/test-fetch-propose.ts'
+            script: 'npx tsx tests/integration/fetchers/test-fetch-propose.test.ts'
         },
         {
             name: 'Cosign Bill Fetcher',
-            script: 'npx tsx prisma/scripts/test-apis/test-fetch-cosign.ts'
+            script: 'npx tsx tests/integration/fetchers/test-fetch-cosign.test.ts'
         },
         {
             name: 'Written Interpellation Fetcher',
-            script: 'npx tsx prisma/scripts/test-apis/test-fetch-written.ts'
+            script: 'npx tsx tests/integration/fetchers/test-fetch-written.test.ts'
         }
     ]
 
