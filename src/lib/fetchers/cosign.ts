@@ -163,8 +163,8 @@ async function processCosignBills(
         // Set time to midnight to avoid timezone issues
         billDate.setHours(0, 0, 0, 0)
 
-        // Points: 1 point for cosigning a PASSED bill
-        const points = 1
+        // Points: 3 points for cosigning a PASSED bill
+        const points = 3
 
         // Extract bill number and title
         const billNumber = bill.字號 || null

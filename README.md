@@ -128,10 +128,11 @@ See `prisma/docs/API_SCRIPT_GUIDELINES.md` for detailed documentation.
 - Automatic fallback for empty queues
 
 ### Scoring Categories
-- **PROPOSE_BILL**: 1 point per bill proposed (max 5/week)
+- **PROPOSE_BILL**: 3 points per bill proposed
+- **PROPOSE_BILL (Passed)**: Additional 6 point bonus when bill passes (9 points total)
 - **COSIGN_BILL**: 3 points per passed bill co-signed
-- **FLOOR_SPEECH**: 1 point per oral floor speech (max 5/week)
-- **WRITTEN_SPEECH**: 1 point per written interpellation (max 5/week)
+- **FLOOR_SPEECH**: 1 point per floor speech (max 5/week)
+- **WRITTEN_SPEECH**: 3 points per written interpellation
 - **ROLLCALL_VOTE**: 1 point per roll call vote participation
 - **MAVERICK_BONUS**: 2 points for voting against party line
 

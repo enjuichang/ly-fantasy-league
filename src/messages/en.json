@@ -212,15 +212,15 @@
       "description": "Points are awarded based on real legislative activities",
       "billProposals": {
         "title": "Bill Proposals",
-        "points": "6 points each",
+        "points": "3 points each",
         "description": "Proposing new legislation",
         "cap": "No weekly cap"
       },
       "billProposalsPassed": {
         "title": "Bill Proposals (Passed)",
-        "points": "12 points each",
+        "points": "9 points each",
         "description": "Proposed bills that pass (三讀通過)",
-        "cap": "6pt base + 6pt bonus = 12pts total"
+        "cap": "3pt base + 6pt bonus = 9pts total"
       },
       "cosignedBills": {
         "title": "Co-signed Bills (Passed)",
@@ -236,9 +236,9 @@
       },
       "writtenInterpellations": {
         "title": "Written Interpellations",
-        "points": "1 point each",
+        "points": "3 points each",
         "description": "Submitting written questions to government officials",
-        "cap": "Weekly cap: 5 points"
+        "cap": "No weekly cap"
       },
       "rollCallVotes": {
         "title": "Roll Call Votes",

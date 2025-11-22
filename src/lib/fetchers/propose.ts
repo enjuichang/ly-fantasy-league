@@ -184,7 +184,7 @@ async function processProposeBills(
             passed
         })
 
-        // STEP 1: Create score for proposing the bill (6 points)
+        // STEP 1: Create score for proposing the bill (3 points)
         const existingProposeScore = await prisma.score.findFirst({
             where: {
                 legislatorId,
@@ -204,12 +204,12 @@ async function processProposeBills(
                 proposeDescription += ` (字號: ${billNumber})`
             }
 
-            // Create score record for proposing (6 points)
+            // Create score record for proposing (3 points)
             await prisma.score.create({
                 data: {
                     legislatorId,
                     date: billDate,
-                    points: 6,
+                    points: 3,
                     description: proposeDescription,
                     category: 'PROPOSE_BILL',
                     billNumber,
@@ -218,7 +218,7 @@ async function processProposeBills(
                 }
             })
 
-            console.log(`  ✓ Created PROPOSE: 6pts - ${billTitle?.substring(0, 50)}${billTitle && billTitle.length > 50 ? '...' : ''}`)
+            console.log(`  ✓ Created PROPOSE: 3pts - ${billTitle?.substring(0, 50)}${billTitle && billTitle.length > 50 ? '...' : ''}`)
             scoresCreated++
         }
 

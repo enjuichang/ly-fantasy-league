@@ -144,8 +144,8 @@ async function processWrittenInterpellations(
         // Set time to midnight to avoid timezone issues
         billDate.setHours(0, 0, 0, 0)
 
-        // Points: 1 point for written interpellation
-        const points = 1
+        // Points: 3 points for written interpellation
+        const points = 3
 
         const title = interpellation.事由 || null
 

@@ -211,16 +211,16 @@
       "title": "計分系統",
       "description": "積分根據真實的立法活動授予",
       "billProposals": {
-        "title": "法律提案",
-        "points": "每項 6 分",
+        "title": "法案提案",
+        "points": "每案 3 分",
         "description": "提出新法案",
         "cap": "無每週上限"
       },
       "billProposalsPassed": {
-        "title": "法律提案（通過）",
-        "points": "每項 12 分",
+        "title": "法案提案（通過）",
+        "points": "每案 9 分",
         "description": "提出的法案三讀通過",
-        "cap": "6分基礎 + 6分獎勵 = 總共 12 分"
+        "cap": "基本 3 分 + 獎勵 6 分 = 共 9 分"
       },
       "cosignedBills": {
         "title": "連署法案（通過）",
@@ -236,9 +236,9 @@
       },
       "writtenInterpellations": {
         "title": "書面質詢",
-        "points": "每次 1 分",
-        "description": "向政府官員提交書面問題",
-        "cap": "每週上限：5 分"
+        "points": "每案 3 分",
+        "description": "向政府官員提出書面質詢",
+        "cap": "無每週上限"
       },
       "rollCallVotes": {
         "title": "記名投票",
