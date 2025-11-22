@@ -27,7 +27,7 @@ export const PARTY_MAPPING: Record<string, PartyInfo> = {
     '無黨籍': {
         chinese: '無黨籍',
         english: 'Independent',
-        emblemUrl: '/images/parties/independent.svg'
+        emblemUrl: '/images/parties/Independent.svg'
     }
 }
 
