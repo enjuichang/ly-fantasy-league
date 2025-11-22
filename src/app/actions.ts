@@ -1044,3 +1044,64 @@ export async function getLegislatorsWithStats() {
         }
     })
 }
+
+export async function deleteLeague(leagueId: string) {
+    const session = await auth()
+    if (!session?.user?.id) {
+        throw new Error("Not authenticated")
+    }
+
+    // Verify user is the commissioner
+    const league = await prisma.league.findUnique({
+        where: { id: leagueId }
+    })
+
+    if (!league) {
+        throw new Error("League not found")
+    }
+
+    if (league.commissionerId !== session.user.id) {
+        throw new Error("Only the commissioner can delete the league")
+    }
+
+    // Delete all related data (Prisma will handle cascade delete based on schema)
+    // But let's be explicit about deletion order for clarity
+    await prisma.$transaction(async (tx) => {
+        // Delete matchups
+        await tx.matchup.deleteMany({ where: { leagueId } })
+
+        // Delete activities
+        await tx.leagueActivity.deleteMany({ where: { leagueId } })
+
+        // Delete invitations (model is called "Invitation" not "LeagueInvitation")
+        await tx.invitation.deleteMany({ where: { leagueId } })
+
+        // Delete draft picks
+        await tx.draftPick.deleteMany({ where: { leagueId } })
+
+        // Get all teams for this league
+        const teams = await tx.team.findMany({
+            where: { leagueId },
+            select: { id: true }
+        })
+        const teamIds = teams.map(t => t.id)
+
+        // Delete draft preferences (linked to teamId, not leagueId)
+        if (teamIds.length > 0) {
+            await tx.draftPreference.deleteMany({
+                where: { teamId: { in: teamIds } }
+            })
+        }
+
+        // Delete teams (this will cascade delete team rosters)
+        await tx.team.deleteMany({ where: { leagueId } })
+
+        // Delete league members
+        await tx.leagueMember.deleteMany({ where: { leagueId } })
+
+        // Finally delete the league
+        await tx.league.delete({ where: { id: leagueId } })
+    })
+
+    revalidatePath("/dashboard")
+}

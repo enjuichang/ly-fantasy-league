@@ -10,6 +10,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge"
 import { getTranslations } from 'next-intl/server'
 import { InviteForm } from './invite-form'
+import { DeleteLeagueDialog } from './delete-league-dialog'
 
 export default async function LeagueSettingsPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params
@@ -145,6 +146,17 @@ export default async function LeagueSettingsPage({ params }: { params: Promise<{
                             )}
                         </TableBody>
                     </Table>
+                </CardContent>
+            </Card>
+
+            {/* Danger Zone */}
+            <Card className="border-destructive">
+                <CardHeader>
+                    <CardTitle className="text-destructive">{t('settings.danger.title')}</CardTitle>
+                    <CardDescription>{t('settings.danger.description')}</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <DeleteLeagueDialog leagueId={id} leagueName={league.name} />
                 </CardContent>
             </Card>
         </div>

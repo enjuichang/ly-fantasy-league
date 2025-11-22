@@ -182,6 +182,27 @@
         "sentAt": "Sent At"
       },
       "noInvites": "No pending invitations"
+    },
+    "danger": {
+      "title": "Danger Zone",
+      "description": "Irreversible actions for this league."
+    },
+    "delete": {
+      "button": "Delete League",
+      "confirmTitle": "Delete League?",
+      "confirmMessage": "Are you sure you want to delete \"{leagueName}\"? This action cannot be undone.",
+      "warning": "This will permanently delete:",
+      "items": {
+        "teams": "All teams and their rosters",
+        "rosters": "All player rosters",
+        "matchups": "All matchups and scores",
+        "invitations": "All pending invitations",
+        "activity": "All league activity history"
+      },
+      "cancel": "Cancel",
+      "confirm": "Delete League",
+      "deleting": "Deleting...",
+      "error": "Failed to delete league. Please try again."
     }
   },
   "rulesPage": {
