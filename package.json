@@ -22,7 +22,12 @@
     "backfill:floor-speech": "tsx prisma/scripts/backfill-floor-speeches.ts",
     "backfill:rollcall": "tsx prisma/scripts/backfill-rollcall.ts",
     "clean:mock": "tsx prisma/scripts/utils/clean-mock-data.ts",
-    "clean:bills": "tsx prisma/scripts/utils/clear-bill-scores.ts"
+    "clean:bills": "tsx prisma/scripts/utils/clear-bill-scores.ts",
+    "test:points": "tsx prisma/scripts/test-apis/test-point-values.ts",
+    "test:fetch-propose": "tsx prisma/scripts/test-apis/test-fetch-propose.ts",
+    "test:fetch-cosign": "tsx prisma/scripts/test-apis/test-fetch-cosign.ts",
+    "test:fetch-written": "tsx prisma/scripts/test-apis/test-fetch-written.ts",
+    "test:all-fetchers": "tsx prisma/scripts/test-apis/run-all-tests.ts"
   },
   "prisma": {
     "seed": "tsx prisma/scripts/seed/seed.ts"
